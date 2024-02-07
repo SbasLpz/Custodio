@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InfoActivity">
+
+    <View
+        android:id="@+id/vwMarco"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/bg_color" />
+
+    <TextView
+        android:id="@+id/tvNombreCustodio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre Apellido"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:layout_marginEnd="@dimen/margin_15dp"
+        android:fontFamily="@font/robotomedium"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeStepGranularity="2sp"
+        app:layout_constraintStart_toEndOf="@id/ivLogo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+        app:layout_constraintEnd_toStartOf="@id/ivUserPhotoApp"
+        />
+
+    <ImageView
+        android:id="@+id/ivUserPhotoApp"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/usuario"
+        android:layout_marginEnd="@dimen/margin_15dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+        />
+
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/logo_comsi"
+        android:layout_marginLeft="@dimen/margin_15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivUserPhotoApp"
+        app:layout_constraintBottom_toBottomOf="@id/ivUserPhotoApp"
+        />
+
+    <View
+        android:id="@+id/vwDatosAcceso"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vwMarco"
+        android:background="@drawable/bg_color_blue" />
+
+    <TextView
+        android:id="@+id/tvDatosAccesoTitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DATOS DE ACCESO"
+        android:textColor="@color/white"
+        android:fontFamily="@font/robotomedium"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="@id/vwDatosAcceso"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/vwDatosAcceso"
+
+        />
+
+    <TextView
+        android:id="@+id/tvPrimerUso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fecha que usó la APP xpor primera vez:"
+        android:textColor="@color/black"
+        android:fontFamily="@font/robotomedium"
+        android:textSize="18sp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toBottomOf="@id/vwDatosAcceso"
+        app:layout_constraintStart_toStartOf="@id/ivLogo"
+
+        />
+
+    <TextView
+        android:id="@+id/tvInfoPrimerUso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toBottomOf="@id/tvPrimerUso"
+        app:layout_constraintStart_toStartOf="@id/tvPrimerUso"
+        />
+
+    <TextView
+        android:id="@+id/tvUltimoUso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ultima vez que usó la APP:"
+        android:textColor="@color/black"
+        android:fontFamily="@font/robotomedium"
+        app:layout_goneMarginTop="@dimen/margin_10dp"
+        android:textSize="18sp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toBottomOf="@id/tvInfoPrimerUso"
+        app:layout_constraintStart_toStartOf="@id/ivLogo"
+
+        />
+
+    <TextView
+        android:id="@+id/tvInfoUltimoUso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toBottomOf="@id/tvUltimoUso"
+        app:layout_constraintStart_toStartOf="@id/tvUltimoUso"
+        />
+
+    <TextView
+        android:id="@+id/tvTotalUsos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Servicios birndados en el mes:"
+        android:textColor="@color/black"
+        android:fontFamily="@font/robotomedium"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/tvInfoUltimoUso"
+        app:layout_constraintStart_toStartOf="@id/ivLogo"
+
+        />
+
+    <TextView
+        android:id="@+id/tvInfoTotalUsos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalUsos"
+        app:layout_constraintStart_toStartOf="@id/tvTotalUsos"
+        />
+
+    <TextView
+        android:id="@+id/tvTotalUsosMes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Servicios en los que usó la App (en el mes):"
+        android:textColor="@color/black"
+        android:fontFamily="@font/robotomedium"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/tvInfoTotalUsos"
+        app:layout_constraintStart_toStartOf="@id/ivLogo"
+
+        />
+
+    <TextView
+        android:id="@+id/tvInfoTotalUsosMes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalUsosMes"
+        app:layout_constraintStart_toStartOf="@id/tvTotalUsosMes"
+
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRegresar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Regresar"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/rojo_basico1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvInfoTotalUsosMes" />
+</androidx.constraintlayout.widget.ConstraintLayout>

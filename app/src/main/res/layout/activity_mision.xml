@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MisionActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintTodo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/vwMarco"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/bg_color" />
+
+        <TextView
+            android:id="@+id/tvNombreCustodio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Nombre Apellido"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/robotomedium"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeMaxTextSize="20sp"
+            android:autoSizeStepGranularity="2sp"
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/ivLogoComsi"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+            app:layout_constraintEnd_toStartOf="@id/ivUserPhotoApp"
+            />
+
+        <ImageView
+            android:id="@+id/ivUserPhotoApp"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/usuario"
+            android:layout_marginEnd="@dimen/margin_15dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+            />
+
+        <ImageView
+            android:id="@+id/ivLogoComsi"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/logo_comsi"
+            android:layout_marginLeft="@dimen/margin_15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ivUserPhotoApp"
+            app:layout_constraintBottom_toBottomOf="@id/ivUserPhotoApp"
+            />
+
+        <View
+            android:id="@+id/vwDatosMision"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/border_datos_mision"
+            android:backgroundTint="@color/et_background_color"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vwMarco" />
+
+        <TextView
+            android:id="@+id/tvDatosMision"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Datos de la misión "
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="@dimen/margin_15dp"
+            android:fontFamily="@font/robotomedium"
+            app:layout_constraintTop_toTopOf="@id/vwDatosMision"
+
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            />
+
+        <TextView
+            android:id="@+id/tvRui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RUI: 885664"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:fontFamily="@font/robotomedium"
+            android:layout_marginStart="10dp"
+            app:layout_constraintTop_toBottomOf="@id/tvDatosMision"
+            app:layout_constraintStart_toEndOf="@id/tvNomb"
+            />
+
+        <TextView
+            android:id="@+id/tvNomb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NOMB: 0325"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:fontFamily="@font/robotomedium"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tvDatosMision"
+            app:layout_constraintStart_toStartOf="@id/tvDatosMision"
+            />
+
+        <TextView
+            android:id="@+id/tvDatosObligatorios"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Datos obligatorios"
+            android:textColor="@color/act_mision_text"
+            android:textSize="20sp"
+            android:fontFamily="@font/robotobold"
+            android:layout_marginStart="@dimen/margin_subTxt_mision_start"
+            android:layout_marginTop="@dimen/margin_subTxt_mision_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vwDatosMision"
+            />
+
+        <View
+            android:id="@+id/dv1"
+            android:layout_width="0dp"
+            android:layout_height="1.35dp"
+            android:background="@drawable/divisor_line"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintEnd_toEndOf="@id/tvNombreCustodio"
+            app:layout_constraintTop_toBottomOf="@id/tvDatosObligatorios"/>
+
+        <TextView
+            android:id="@+id/tvPlacaCabezal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Placa del cabezal: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_15dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintTop_toTopOf="@id/dv1"
+            />
+
+        <EditText
+            android:id="@+id/etPlacaCabezal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:enabled="false"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@id/ivMarchamoFiscalFoto"
+            app:layout_constraintStart_toStartOf="@id/tvPlacaCabezal"
+            app:layout_constraintTop_toBottomOf="@id/tvPlacaCabezal"
+            app:layout_constraintBottom_toTopOf="@id/tvFotoCabezal"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+        <TextView
+            android:id="@+id/tvFotoCabezal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Foto del cabezal: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintTop_toBottomOf="@id/etPlacaCabezal"
+            />
+
+<!--        <ImageView-->
+<!--            android:id="@+id/ivFotoCabezal"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/ic_photo_camera"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@id/tvFotoCabezal"-->
+<!--            android:layout_marginEnd="30dp"-->
+<!--            tools:layout_editor_absoluteX="362dp" />-->
+
+        <ImageView
+            android:id="@+id/ivFotoCabezal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_photo_camera"
+            app:layout_constraintStart_toEndOf="@id/tvFotoCabezal"
+            app:layout_constraintTop_toTopOf="@id/tvFotoCabezal"
+            tools:layout_editor_absoluteX="362dp" />
+
+        <TextView
+            android:id="@+id/tvPlacaTC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Placa de TC: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintTop_toBottomOf="@id/tvFotoCabezal"
+            />
+
+        <EditText
+            android:id="@+id/etPlacaTC"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:enabled="false"
+            android:textColor="@color/black"
+            android:text="TC - EXA"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@id/tvNumContenedor"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintStart_toStartOf="@id/tvPlacaTC"
+            app:layout_constraintTop_toBottomOf="@id/tvPlacaTC"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvNumContenedor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Número contenedor: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintTop_toBottomOf="@id/etPlacaTC"
+            />
+
+        <EditText
+            android:id="@+id/etNumContenedor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:enabled="false"
+            android:textColor="@color/black"
+            android:text=""
+            android:textSize="15sp"
+            app:layout_constraintBottom_toTopOf="@id/tvNombrePiloto"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintStart_toStartOf="@id/tvNumContenedor"
+            app:layout_constraintTop_toBottomOf="@id/tvNumContenedor"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvNombrePiloto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre del piloto"
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintTop_toBottomOf="@id/etNumContenedor"
+            />
+
+        <EditText
+            android:id="@+id/etNombrePiloto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:enabled="false"
+            app:layout_constraintBottom_toTopOf="@id/tvRecordatorio"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintStart_toStartOf="@id/tvNombrePiloto"
+            app:layout_constraintTop_toBottomOf="@id/tvNombrePiloto"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvRecordatorio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="#FD3E52"
+            android:padding="@dimen/margin_15dp"
+            android:textColor="@color/white"
+            android:text="@string/recordatorio"
+            android:textSize="12sp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/etNombrePiloto"
+            app:layout_constraintStart_toStartOf="@id/etNombrePiloto"
+            app:layout_constraintEnd_toEndOf="@id/etNombrePiloto"/>
+
+        <ImageView
+            android:id="@+id/ivMarchamoFiscalFoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_photo_camera"
+            app:layout_constraintBottom_toBottomOf="@id/etMarchamoFiscal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/etMarchamoFiscal"
+            android:layout_marginEnd="30dp"
+            tools:layout_editor_absoluteX="362dp" />
+
+        <TextView
+            android:id="@+id/tvDatosPorAgregar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Datos por agregar"
+            android:textColor="@color/act_mision_text"
+            android:textSize="20sp"
+            android:fontFamily="@font/robotobold"
+            android:layout_marginStart="@dimen/margin_subTxt_mision_start"
+            android:layout_marginTop="@dimen/margin_subTxt_mision_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvRecordatorio"
+            />
+
+        <View
+            android:id="@+id/dv2"
+            android:layout_width="0dp"
+            android:layout_height="1.35dp"
+            android:background="@drawable/divisor_line"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintEnd_toEndOf="@id/tvNombreCustodio"
+            app:layout_constraintTop_toBottomOf="@id/tvDatosPorAgregar"/>
+
+        <TextView
+            android:id="@+id/tvTelefonoPiloto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Télefono del piloto: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
+            app:layout_constraintTop_toBottomOf="@id/dv2"
+            />
+
+        <EditText
+            android:id="@+id/etTelefonoPiloto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:enabled="true"
+            android:inputType="text"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/tvTelefonoPiloto"
+            app:layout_constraintTop_toBottomOf="@id/tvTelefonoPiloto"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvSellado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:text="Unidad sellada con:"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/tvMarchamoFiscal"
+            app:layout_constraintStart_toStartOf="@id/etPlacaCabezal"
+            app:layout_constraintTop_toBottomOf="@id/etTelefonoPiloto"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <RadioGroup
+            android:id="@+id/rgSellado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/tvSellado"
+            app:layout_constraintTop_toBottomOf="@id/tvSellado">
+
+            <RadioButton
+                android:id="@+id/rbSelladoMarchamo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Marchamo fiscal"/>
+
+            <RadioButton
+                android:id="@+id/rbSelladoCandado"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Candado"/>
+        </RadioGroup>
+
+
+        <TextView
+            android:id="@+id/tvMarchamoFiscal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Marchamo fiscal: "
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
+            app:layout_constraintTop_toBottomOf="@id/rgSellado" />
+
+        <EditText
+            android:id="@+id/etMarchamoFiscal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:scrollHorizontally="true"
+            android:maxLines="1"
+            android:enabled="true"
+            app:layout_constraintEnd_toStartOf="@id/ivMarchamoFiscalFoto"
+            app:layout_constraintStart_toStartOf="@id/tvMarchamoFiscal"
+            app:layout_constraintTop_toBottomOf="@id/tvMarchamoFiscal"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvDatosEquipamiento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_subTxt_mision_top"
+            android:fontFamily="@font/robotobold"
+            android:text="Datos del equipamiento"
+            android:textColor="@color/act_mision_text"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@id/tvMarchamoFiscal"
+            app:layout_constraintTop_toBottomOf="@id/tvMarchamoFiscal" />
+
+        <View
+            android:id="@+id/dv3"
+            android:layout_width="0dp"
+            android:layout_height="1.35dp"
+            android:background="@drawable/divisor_line"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintEnd_toEndOf="@id/tvNombreCustodio"
+            app:layout_constraintTop_toBottomOf="@id/tvDatosEquipamiento"/>
+
+        <TextView
+            android:id="@+id/tvNumArma"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Número del arma: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosEquipamiento"
+            app:layout_constraintTop_toBottomOf="@id/tvDatosEquipamiento"
+            />
+
+        <EditText
+            android:id="@+id/etNumArma"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:enabled="false"
+
+            app:layout_constraintEnd_toEndOf="@id/etPlacaTC"
+            app:layout_constraintStart_toStartOf="@id/tvNumArma"
+            app:layout_constraintTop_toBottomOf="@id/tvNumArma"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvMarchamoGps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Marchamo GPS: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosEquipamiento"
+            app:layout_constraintTop_toBottomOf="@id/etNumArma"
+            />
+
+        <EditText
+            android:id="@+id/etMarchamoGps"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:enabled="true"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintStart_toStartOf="@id/tvMarchamoGps"
+            app:layout_constraintTop_toBottomOf="@id/tvMarchamoGps"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvDireccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dirección de entrega:"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:layout_marginTop="@dimen/margin_10dp"
+            app:layout_constraintTop_toBottomOf="@id/etMarchamoGps"
+            app:layout_constraintStart_toStartOf="@id/tvMarchamoGps"
+            />
+
+        <TextView
+            android:id="@+id/tvMostrarDireccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dirección de entraga"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:layout_marginTop="@dimen/margin_10dp"
+            app:layout_constraintTop_toBottomOf="@id/tvDireccion"
+            app:layout_constraintStart_toStartOf="@id/tvMarchamoGps"
+            />
+
+        <TextView
+            android:id="@+id/tvNotas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notas adicionales"
+            android:textColor="@color/et_background_color"
+            android:textSize="19sp"
+            android:fontFamily="@font/robotoregular"
+            android:layout_marginStart="@dimen/margin_subTxt_mision_start"
+            android:layout_marginTop="@dimen/margin_subTxt_mision_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvMostrarDireccion"
+            />
+
+        <EditText
+            android:id="@+id/etNotas"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:inputType="text|textMultiLine"
+            android:gravity="top"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/suave_black_1"
+            android:textColor="@color/white"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvNotas"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSiguiente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Siguiente"
+            android:backgroundTint="@color/btn_yellow"
+            android:paddingTop="@dimen/margin_10dp"
+            android:paddingRight="50dp"
+            android:paddingLeft="50dp"
+            android:paddingBottom="@dimen/margin_10dp"
+            android:fontFamily="@font/robotomedium"
+            android:textSize="15sp"
+            android:layout_marginTop="@dimen/margin_subTxt_mision_top"
+            android:layout_marginBottom="@dimen/margin_subTxt_mision_top"
+            app:cornerRadius="30dp"
+            app:layout_constraintTop_toBottomOf="@id/etNotas"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

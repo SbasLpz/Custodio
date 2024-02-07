@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_15dp">15dp</dimen>
+    <dimen name="margin_10dp">13dp</dimen>
+    <dimen name="font_et_size">15sp</dimen>
+
+    <dimen name="margin_subTxt_mision_start">30dp</dimen>
+    <dimen name="margin_subTxt_mision_top">22dp</dimen>
+
+    <dimen name="size_bar_bottom">90dp</dimen>
+    <dimen name="height_icons_bar">40dp</dimen>
+    <dimen name="sep_30">30sp</dimen>
+</resources>

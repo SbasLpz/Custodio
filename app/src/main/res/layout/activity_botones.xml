@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".BotonesActivity">
+
+        <ScrollView
+            android:id="@+id/scroll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottom_bar">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                        <View
+                            android:id="@+id/vwMarco"
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:background="@drawable/bg_color" />
+
+                        <TextView
+                            android:id="@+id/tvMisionRui"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rui"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:layout_marginStart="@dimen/margin_15dp"
+                            android:fontFamily="@font/robotomedium"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+                            app:layout_constraintStart_toEndOf="@id/ivLogo"
+                            />
+                        <TextView
+                            android:id="@+id/tvMisionNomb"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nombramineto"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:layout_marginStart="@dimen/margin_15dp"
+                            android:fontFamily="@font/robotomedium"
+                            app:layout_constraintTop_toBottomOf="@id/tvMisionRui"
+                            app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+                            app:layout_constraintStart_toEndOf="@id/ivLogo"
+                            />
+
+                        <ImageView
+                            android:id="@+id/ivUserPhotoApp"
+                            android:layout_width="60dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/usuario"
+                            android:layout_marginEnd="@dimen/margin_15dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+                            />
+
+                        <ImageView
+                            android:id="@+id/ivLogo"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:src="@drawable/logo_comsi"
+                            android:layout_marginLeft="@dimen/margin_15dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/ivUserPhotoApp"
+                            app:layout_constraintBottom_toBottomOf="@id/ivUserPhotoApp"
+                            />
+
+                        <LinearLayout
+                            android:id="@+id/linear"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@id/vwMarco"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:orientation="vertical">
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerviewButtons"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:padding="@dimen/margin_10dp"
+                                    tools:listitem="@layout/layout_buttons" />
+
+                        </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_bar_bottom"
+            android:background="@color/suave_black_1"
+            android:clickable="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+                <View
+                    android:id="@+id/mision_space"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/icon_datos_mision"
+                    app:layout_constraintEnd_toEndOf="@id/icon_datos_mision"
+                    />
+                <ImageView
+                    android:id="@+id/icon_datos_mision"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_icons_bar"
+                    android:src="@drawable/icon_mision"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/icon_datos_mision_text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/icon_tomar_foto"
+                    />
+                <TextView
+                    android:id="@+id/icon_datos_mision_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Datos de la misión"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/robotomedium"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/icon_datos_mision"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/icon_datos_mision"/>
+
+                <View
+                    android:id="@+id/foto_space"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/icon_tomar_foto"
+                    app:layout_constraintEnd_toEndOf="@id/icon_tomar_foto"
+                    />
+                <ImageView
+                    android:id="@+id/icon_tomar_foto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_icons_bar"
+                    android:src="@drawable/icon_camara"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/icon_datos_mision_text"
+                    app:layout_constraintStart_toEndOf="@id/icon_datos_mision"
+                    app:layout_constraintEnd_toStartOf="@id/icon_perfil"
+                    />
+                <TextView
+                    android:id="@+id/icon_tomar_foto_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tomar foto"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/robotomedium"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="@id/icon_tomar_foto"
+                    app:layout_constraintEnd_toEndOf="@id/icon_tomar_foto"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/icon_datos_mision"/>
+
+                <View
+                    android:id="@+id/perfil_space"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/icon_perfil"
+                    app:layout_constraintEnd_toEndOf="@id/icon_perfil"
+                    />
+                <ImageView
+                    android:id="@+id/icon_perfil"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_icons_bar"
+                    android:src="@drawable/icon_perfil"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/icon_datos_mision_text"
+                    app:layout_constraintStart_toEndOf="@id/icon_tomar_foto"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/icon_perfil_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Perfil custodio"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/robotomedium"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="@id/icon_perfil"
+                    app:layout_constraintEnd_toEndOf="@id/icon_perfil"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/icon_perfil"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
