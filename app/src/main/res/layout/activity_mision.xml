@@ -115,6 +115,21 @@
             />
 
         <TextView
+            android:id="@+id/version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vwDatosMision"
+            android:text="@string/version"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:layout_marginTop="5dp"
+            />
+
+        <TextView
             android:id="@+id/tvDatosObligatorios"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -123,9 +138,9 @@
             android:textSize="20sp"
             android:fontFamily="@font/robotobold"
             android:layout_marginStart="@dimen/margin_subTxt_mision_start"
-            android:layout_marginTop="@dimen/margin_subTxt_mision_top"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vwDatosMision"
+            app:layout_constraintTop_toBottomOf="@id/version"
             />
 
         <View

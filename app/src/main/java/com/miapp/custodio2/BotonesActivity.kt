@@ -1,15 +1,21 @@
 package com.miapp.custodio2
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 
 import android.content.Intent
+import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.Network
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -19,15 +25,16 @@ import com.google.gson.GsonBuilder
 import com.miapp.custodio2.Adapters.Adapter
 import com.miapp.custodio2.Adapters.CardViewData
 import com.miapp.custodio2.ClasesRequest.*
+import com.miapp.custodio2.Utils.Checker
+import com.miapp.custodio2.Utils.LocationService
 import com.miapp.custodio2.Utils.Preferencias
 import com.miapp.custodio2.Utils.RequestPermissions
-import com.miapp.custodio2.Utils.SegundoPlanoTasks
 import com.miapp.custodio2.databinding.ActivityBotonesBinding
 import com.techiness.progressdialoglibrary.ProgressDialog
 import kotlinx.coroutines.*
 import java.util.ArrayList
 
-class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
+class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checker {
     //Para que funciones el Binding
     private lateinit var binding: ActivityBotonesBinding
     //Utils donde esta funciones genericas
@@ -36,21 +43,31 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
     var botones: BotonesRes? = null
     //new
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var connManager: ConnectivityManager
 
-
+    object ActivityHolder {
+        var botonesActivity: BotonesActivity? = null
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBotonesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        GlobalScope.launch {
+            val registro = Registro("0","Usuario en Botones", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+            //Aqui iba el mismo codigo de sendButtonData()
+            utils.doRequest(registro, this@BotonesActivity)
+        }
+
+        connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        connManager.registerDefaultNetworkCallback(networkCallback)
+
+        ActivityHolder.botonesActivity = this
+
         preferencias.setGlobalData(this, "verM", "false")
 
         binding.tvMisionRui.text = "RUI: "+preferencias.getGlobalData(this, "Rui")
         binding.tvMisionNomb.text = "NOMB: "+preferencias.getGlobalData(this, "Nomb")
-
-//        GlobalScope.launch {
-//            utils.startLocationUpdates(this@BotonesActivity)
-//        }
 
         lifecycleScope.launch {
             utils.startLocationUpdates(this@BotonesActivity)
@@ -97,6 +114,22 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
             binding.recyclerviewButtons.setHasFixedSize(true)
         }
 
+        if (utils.isServiceRunning(this, LocationService::class.java)){
+            println("77777777 SERVICIO CORRIENDO 77777777")
+            runBlocking {
+                val registro = Registro("0", "Servicio ACTIVO !", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+                //Aqui iba el mismo codigo de sendButtonData()
+                utils.doRequest(registro, this@BotonesActivity)
+            }
+        } else {
+            println("77777777 // ! SERVICIO NO EJECUTANDOSE ! // 77777777")
+            runBlocking {
+                val registro = Registro("0","Servicio INACTIVO !", utils.getCurrentDate(), "0.10", "0.10", preferencias.getGlobalData(this@BotonesActivity, "TM"))
+                //Aqui iba el mismo codigo de sendButtonData()
+                utils.doRequest(registro, this@BotonesActivity)
+            }
+        }
+
         //Boton de la MISION
         binding.misionSpace.setOnClickListener {
             preferencias.setGlobalData(this, "verM", "true")
@@ -127,22 +160,11 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
                 startActivity(Intent(this@BotonesActivity, PanelActivity::class.java))
                 this@BotonesActivity.finishAffinity()
             }
-
-//            val check = Check(preferencias.getGlobalData(this@BotonesActivity, "Rui"), preferencias.getGlobalData(this@BotonesActivity, "TM"))
-//            utils.doRequest(check,this@BotonesActivity)
-//
-//            if (utils.infoCheck != null){
-//                if (utils.infoCheck!!.Success){
-//                    if(!utils.infoCheck!!.Activo){
-//                        preferencias.setGlobalData(this@BotonesActivity, "Sesion", "primera")
-//                        this@BotonesActivity.finishAffinity()
-//                    } else {
-//                        println("Check Message: "+utils.infoCheck!!.Message+"Check Activo: "+utils.infoCheck!!.Activo)
-//                        Toast.makeText(this@BotonesActivity, "Check Message: "+utils.infoCheck!!.Message+"Check Activo: "+utils.infoCheck!!.Activo, Toast.LENGTH_LONG).show()
-//                        utils.startLocationUpdates(this@BotonesActivity)
-//                    }
-//                }
-//            }
+        }
+        GlobalScope.launch(Dispatchers.Main) {
+            val registro = Registro("0","Usuario en Botones", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+            //Aqui iba el mismo codigo de sendButtonData()
+            utils.doRequest(registro, this@BotonesActivity)
         }
     }
 
@@ -185,23 +207,30 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStop() {
         super.onStop()
-//        if(preferencias.getGlobalData(this, "Sesion") != "segunda"){
-//            preferencias.setGlobalData(this, "Sesion", "reanudar")
-//        }
         println("DESTRUIDA")
         preferencias.setGlobalData(this, "Sesion", "primera")
-        val serviceIntent = Intent(this, SegundoPlanoTasks::class.java)
-        this@BotonesActivity.startService(serviceIntent)
-//        GlobalScope.launch(Dispatchers.IO){
-//            println("HHHJJHHJJHHHh")
-//
-//        }
-        //ContextCompat.startForegroundService(this, serviceIntent)
+        utils.stopLocationUpdates()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        connManager.unregisterNetworkCallback(networkCallback)
+        Intent(applicationContext, LocationService::class.java).apply {
+            action = LocationService.SERVICE_STOP
+            startService(this)
+            println("KKK    Termine las ubicaciones SERVICE.    KKK")
+        }
+        GlobalScope.launch {
+            val registro = Registro("0","Se CERRO la app !!", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+            //Aqui iba el mismo codigo de sendButtonData()
+            utils.doRequest(registro, this@BotonesActivity)
+        }
+        println("888888888888888888  CERRE LA APP  8888888888888888888")
+    }
     override fun onPause() {
         super.onPause()
-        utils.stopLocationUpdates()
+        utils.stopLocationUpdates222(this)
+        println("NO MAS UBIS NORMALES")
         if (!utils.stopLocationUpdates222(this)){
             preferencias.setGlobalData(this, "Sesion", "primera")
             finishAffinity()
@@ -222,8 +251,12 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
 
             utils.onlyCurrentLocation(this@BotonesActivity){ result ->
                 if(result == "true"){
+                    var tipoEvento = "1"
+                    if(name == "Pánico" || name == "Desperfectos" || name == "Puesto de Registro" || name == "Unidad Accidentada"){
+                        tipoEvento = "2"
+                    }
                     //Ya se tiene la UBICACION
-                    val registro = Registro(name, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+                    val registro = Registro(tipoEvento, name, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@BotonesActivity, "TM"))
 
                     //Aqui iba el mismo codigo de sendButtonData()
                     sendButtonData(name, registro)
@@ -242,16 +275,16 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
         utils.onlyCurrentLocation(this) { result ->
             if(result == "true"){
                 lifecycleScope.launch {
-                    val registro = Registro(name, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+                    val registro = Registro("2", name, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@BotonesActivity, "TM"))
                     utils.doRequest(registro, this@BotonesActivity)
                     //preferencias.updateGlobalData(this, "Sesion", "segunda")
                     preferencias.setGlobalData(this@BotonesActivity, "Sesion", "segunda")
 
                     if(name == "Pánico"){
                         startActivity(Intent(this@BotonesActivity, InicioScreen::class.java))
-                        this@BotonesActivity.finish()
+                        //this@BotonesActivity.finish()
                     } else {
-                        this@BotonesActivity.finish()
+                        //this@BotonesActivity.finish()
                     }
                 }
             } else {
@@ -275,48 +308,12 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
             .show()
     }
 
-    private fun sendButtonDataXoriginal(name: String, registro: Registro){
-        when(name){
-            "Dirección de entrega" ->{
-                showDireccion()
-
-            }
-            "Llamada" -> utils.call(this@BotonesActivity, utils.tel)
-            "Pánico" -> {
-                lifecycleScope.launch {
-                    cerrarAlert("Pánico")
-                }
-            }
-            "Puesto de Registro" -> {
-                lifecycleScope.launch {
-                    cerrarAlert("Puesto de Registro")
-                }
-            }
-            else ->{
-                lifecycleScope.launch {
-                    utils.doRequest(registro, this@BotonesActivity)
-                }
-            }
-        }
-
-        if(utils.infoRegistro == null){
-            //println("VERRR_EE: "+utils.infoRegistro!!.Success)
-            utils.progressDialog!!.dismiss()
-            Toast.makeText(this@BotonesActivity, "Error: "+utils.errorString, Toast.LENGTH_SHORT).show()
-            //progressDialog.dismiss()
-        } else {
-            utils.progressDialog!!.dismiss()
-            if(utils.infoRegistro!!.Success){
-                utils.progressDialog!!.dismiss()
-                Toast.makeText(this@BotonesActivity, "Comando: "+name+" enviado con exito", Toast.LENGTH_SHORT).show()
-                //progressDialog.dismiss()
-            } else {
-                utils.progressDialog!!.dismiss()
-                Toast.makeText(this@BotonesActivity, "El comando: "+name+" no pudo enviarse", Toast.LENGTH_SHORT).show()
-                //progressDialog.dismiss()
-            }
-        }
+    override fun onBackPressed() {
+        //super.onBackPressed()
+        moveTaskToBack(true)
+        println("ON BACK PRESSED")
     }
+
 
     private fun sendButtonData(name: String, registro: Registro){
         lifecycleScope.launch {
@@ -339,8 +336,6 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
                     responseRequest(name)
                 }
             }
-
-
         }
     }
 
@@ -362,6 +357,26 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener {
                 //progressDialog.dismiss()
             }
         }
+    }
+
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onLost(network: Network) {
+            super.onLost(network)
+            binding.version.setTextColor(Color.RED)
+        }
+
+        override fun onAvailable(network: Network) {
+            super.onAvailable(network)
+            binding.version.setTextColor(Color.DKGRAY)
+        }
+    }
+
+    override fun updateTextView() {
+        println("huh")
+    }
+
+    override fun getTxtVersion(): TextView {
+        return binding.version
     }
 
 }

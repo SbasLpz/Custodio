@@ -5,4 +5,6 @@ import android.location.Location
 interface CallbackUbi {
     fun onLocationReceived(location: Location)
     fun onLocationError(error: String)
+
+    //suspend fun sendRegistro()
 }

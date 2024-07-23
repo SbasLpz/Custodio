@@ -2,6 +2,8 @@ package com.miapp.custodio2.Utils
 
 import android.Manifest
 import android.app.Activity
+import android.app.ActivityManager
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -10,21 +12,29 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.Network
 import android.net.Uri
 import android.os.Build
 import android.os.Looper
 import android.provider.Settings
 import android.util.Base64
+import android.widget.EditText
 import android.widget.Toast
+import androidx.core.R
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.getSystemService
 import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
@@ -64,9 +74,12 @@ class RequestPermissions() {
     var latitude = ""
     var longitude = ""
     var coordenadas = arrayOf("", "")
+    var received = 0
 
     //C2DM - TOKEN DEVICE
     var tokenDevice = "solo"
+
+    var ServiceRunning = false
 
     //RESPONSES
     //Inicio de sesion - /Autenticar
@@ -94,6 +107,9 @@ class RequestPermissions() {
 
     var listOfFotos: MutableList<Foto> = mutableListOf()
 
+    var lat0 = ""
+    var long0 = ""
+
     //PERMISOS
     //act: Activity, permisos: Array<String>, code: Int
     fun solicitarPermisos(act: Activity) {
@@ -103,7 +119,7 @@ class RequestPermissions() {
             println("SDK mayor a 33 o igual")
             // El dispositivo está ejecutando Android 11 o una versión posterior
             permisos = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.CAMERA, android.Manifest.permission.READ_MEDIA_IMAGES, android.Manifest.permission.CALL_PHONE)
+                android.Manifest.permission.CAMERA, android.Manifest.permission.READ_MEDIA_IMAGES, android.Manifest.permission.CALL_PHONE, Manifest.permission.POST_NOTIFICATIONS)
         }
 
         println("Permisos: ")
@@ -152,14 +168,24 @@ class RequestPermissions() {
                 100
             )
         }
+        //println("********* BUAHH !! ********")
+    }
+
+    fun openAppNotificationSettings(act:Activity) {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", act.packageName, null)
+        intent.data = uri
+        act.startActivity(intent)
     }
 
     fun checkGrantedpermissions(act: Activity):Boolean {
 
+        var permisosDados = NotificationManagerCompat.from(act).areNotificationsEnabled()
+
         for (permiso in permisos) {
             val resultado = ContextCompat.checkSelfPermission(act, permiso)
 
-            if (resultado != PackageManager.PERMISSION_GRANTED) {
+            if (resultado != PackageManager.PERMISSION_GRANTED || !permisosDados) {
                 //Toast.makeText(act, permiso.toString()+" NO concedido", Toast.LENGTH_LONG).show()
 
                 MaterialAlertDialogBuilder(act)
@@ -384,13 +410,35 @@ class RequestPermissions() {
                 tokenDevice = it
                 //myCallback.invoke(tokenDevice)
                 println("TOKEN_DEVICE: "+tokenDevice)
-
             }
             .addOnFailureListener {
                 Toast.makeText(act, "OnFailureListener: " + it.toString(), Toast.LENGTH_SHORT)
                     .show()
                 tokenDevice = "Exception"
                 //myCallback.invoke(tokenDevice)
+            }
+    }
+
+    fun getTknDev(act: Activity, callback: (String) -> Unit) {
+        /*if (!this::fusedLocationClient.isInitialized){
+            startLocationUpdates(act)
+            Toast.makeText(act, "IM HERE WWW", Toast.LENGTH_SHORT).show()
+        }*/
+        fireMessaging = FirebaseMessaging.getInstance()
+
+        fireMessaging.token
+            .addOnSuccessListener {
+                tokenDevice = it
+                //myCallback.invoke(tokenDevice)
+                println("TOKEN_DEVICE: "+tokenDevice)
+                callback(tokenDevice)
+            }
+            .addOnFailureListener {
+                Toast.makeText(act, "OnFailureListener: " + it.toString(), Toast.LENGTH_SHORT)
+                    .show()
+                tokenDevice = "Exception"
+                //myCallback.invoke(tokenDevice)
+                callback(tokenDevice)
             }
     }
 
@@ -841,12 +889,14 @@ class RequestPermissions() {
 
     suspend fun registro(datos: Registro, act: Activity){
         try {
+
             val retrofit = Retrofit.Builder()
                 .baseUrl(act.getString(com.miapp.custodio2.R.string.UrlBase))
                 .build()
             val service = retrofit.create(APIService::class.java)
             val jsonObject = JSONObject()
 
+            jsonObject.put("TipoEvento", datos.TipoEvento)
             jsonObject.put("Accion", datos.Accion)
             jsonObject.put("Fecha", datos.Fecha)
             jsonObject.put("Latitud", datos.Latitud)
@@ -880,16 +930,22 @@ class RequestPermissions() {
         } catch (e: UnknownHostException){
             println("Reg/ Error de resolución de host: ${e.message}")
 
-            MaterialAlertDialogBuilder(act)
-                .setTitle("Error de conexión con Comsi SICCAP ")
-                .setMessage("Error : ${e.message} \n\nProblemas con conexion a Comsi SICCAP, compruebe estar con conexión o sino itentelo mas tarde")
-                .setNeutralButton("Aceptar") { dialog, which ->
-                    // Respond to neutral button press
-                    return@setNeutralButton
-                }
-                .show()
+            //Looper.prepare()
+            act.runOnUiThread {
+                MaterialAlertDialogBuilder(act)
+                    .setTitle("Error de conexión con Comsi SICCAP ")
+                    .setMessage("Error : ${e.message} \n\nProblemas con conexion a Comsi SICCAP, compruebe estar con conexión o sino itentelo mas tarde")
+                    .setNeutralButton("Aceptar") { dialog, which ->
+                        // Respond to neutral button press
+                        return@setNeutralButton
+                    }
+                    .show()
 
-            Toast.makeText(act, "Reg/ Error comunicación con host, verfique que tenga conexión a Internet", Toast.LENGTH_LONG).show()
+                Toast.makeText(act, "Reg/ Error comunicación con host, verfique que tenga conexión a Internet", Toast.LENGTH_LONG).show()
+            }
+            //Looper.loop()
+
+
         } catch (e: SocketTimeoutException) {
             println("Reg/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "Reg/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
@@ -942,7 +998,7 @@ class RequestPermissions() {
     }
 
 
-    suspend fun registro2(datos: Registro, act: ExtraUtils){
+    suspend fun registro2(datos: Registro, act: LocationService){
         try {
             val retrofit = Retrofit.Builder()
                 .baseUrl(act.getString(com.miapp.custodio2.R.string.UrlBase))
@@ -1006,7 +1062,7 @@ class RequestPermissions() {
                     result ?: return
                     result ?: return
 
-                    if (result.locations.isNotEmpty()) {
+                    if (result.lastLocation != null) {
                         latitude = result.lastLocation!!.latitude.toString()
                         longitude = result.lastLocation!!.longitude.toString()
                         coordenadas.set(0, latitude)
@@ -1017,15 +1073,18 @@ class RequestPermissions() {
                         //myCallback.invoke(coordenadas)
                         /*Toast.makeText(act, "Consegui UBICACION SIUUU", Toast.LENGTH_SHORT).show()*/
                         /*stopLocationUpdates()*/
+                        println("AJA KKKK 1")
                         callback.onLocationReceived(location = result.lastLocation!!)
 
                     } else {
                         coordenadas.set(0, "Empty")
                         //myCallback.invoke(coordenadas)
+                        println("AJA KKKK ")
                         callback.onLocationError("Not found")
                     }
 
                 }
+
             }
 
             fusedLocationClient.requestLocationUpdates(
@@ -1034,6 +1093,18 @@ class RequestPermissions() {
                 Looper.getMainLooper()
             )
         }
+    }
+
+    fun isServiceRunning(cntxt: Context, service: Class<*>):Boolean{
+        val manager = cntxt.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (serv in manager.getRunningServices(Int.MAX_VALUE)){
+            if (service.name == serv.service.className){
+                if (serv.foreground){
+                    return true
+                }
+            }
+        }
+        return false
     }
 
 

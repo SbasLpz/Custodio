@@ -1,10 +1,15 @@
 package com.miapp.custodio2
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -16,12 +21,16 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.miapp.custodio2.ClasesRequest.Inicio
+import com.miapp.custodio2.ClasesRequest.Registro
 import com.miapp.custodio2.Utils.Actualizaciones
+import com.miapp.custodio2.Utils.LocationService
 import com.miapp.custodio2.Utils.Preferencias
 import com.miapp.custodio2.Utils.RequestPermissions
 import com.miapp.custodio2.databinding.ActivityMainBinding
 import com.techiness.progressdialoglibrary.ProgressDialog
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -83,7 +92,12 @@ class MainActivity : AppCompatActivity() {
         binding.btnIngresar.isEnabled = true
 
         //C2DM - TOKE DEVICE
-        utils.getDeviceToken(this)
+        utils.getTknDev(this){
+            //binding.etUsuario.setText(it)
+            println("TOKEN DISPOSITIVO: "+it)
+        }
+
+        //binding.etUsuario.setText(utils.tokenDevice)
 
         //solcitarPermisos permite SOLICITAR un array de PERMISOS al usuario
         /*utils.solicitarPermisos(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -103,6 +117,10 @@ class MainActivity : AppCompatActivity() {
 
         //BOTON Ingresar
         binding.btnIngresar.setOnClickListener {
+//            Intent(applicationContext, LocationService::class.java).apply {
+//                action = LocationService.SERVICE_START
+//                startService(this)
+//            }
             if(utils.checkGrantedpermissions(this)){
                 if (utils.isLocationCallbackNull()){
                     utils.startLocationUpdates(this)
@@ -173,6 +191,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode){
+            100 -> {
+                var permisosDados = NotificationManagerCompat.from(this).areNotificationsEnabled()
+                if (!permisosDados){
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle("Permiso de notificación requerido")
+                        .setMessage("La app necesita este permiso para funciones criticas, como Pánico y ubicación")
+                        .setPositiveButton("Dar permiso") { dialog, which ->
+                            // Respond to neutral button press
+                            utils.openAppNotificationSettings(this)
+                        }
+                        .setNegativeButton("Salir") { dialog, which ->
+
+                        }
+                        .show()
+
+                }
+            }
+        }
+    }
+
 
     // ========================== FUNCIONES DEL MAIN ==========================
 
@@ -181,7 +226,7 @@ class MainActivity : AppCompatActivity() {
         //Token Mision
         preferencias.setGlobalData(this@MainActivity, "TM", utils.infoAutenticar!!.Token)
         //Rui
-        preferencias.setGlobalData(this@MainActivity, "Rui", utils.infoAutenticar!!.Rui)
+        preferencias.setGlobalData(this@MainActivity, "Rui", utils.infoAutenticar!!.Rui.toString())
         //nomrbre custodio
         preferencias.setGlobalData(this@MainActivity, "NombreCustodio", utils.infoAutenticar!!.NombreCustodio)
         //NOMB
@@ -206,6 +251,7 @@ class MainActivity : AppCompatActivity() {
     var contadorLocation = 0
 
     private suspend fun inicioSesion(){
+
         contadorLocation++
         if(utils.longitude == "" && utils.latitude == ""){
             //FuckProgress(this@MainActivity).light("Loading...")
@@ -257,12 +303,38 @@ class MainActivity : AppCompatActivity() {
             /*utils.startLocationUpdates(this@MainActivity)*/
             if (utils.infoAutenticar != null){
                 var info = utils.infoAutenticar
+
+                //info!!.Rui = 0
+
+                if (info!!.Rui == null || info!!.Rui == 0){
+                    utils.progressDialog?.dismiss()
+                    Toast.makeText(this@MainActivity, "Mision no asignada", Toast.LENGTH_SHORT).show()
+                    binding.btnIngresar.isEnabled = true
+                    /** 3 DATOS QUE OBTENDRA INFO ACT **/
+                    println("PRIMER USOOOOOOOOOOO: "+info.PrimerUso)
+                    preferencias.setGlobalData(this@MainActivity, "PrimerUso",  info.PrimerUso)
+                    preferencias.setGlobalData(this@MainActivity, "UltimoUso", info.UltimoUso)
+                    preferencias.setGlobalData(this@MainActivity, "TotalServiciosApp", info.TotalServiciosApp)
+                    preferencias.setGlobalData(this@MainActivity, "TotalServiciosMes", info.TotalServiciosApp)
+                    preferencias.setGlobalData(this@MainActivity, "NombreCustodio", info.NombreCustodio)
+                    binding.btnIngresar.isEnabled = true
+                    val intent = Intent(this@MainActivity, InfoActivity::class.java)
+                    startActivity(intent)
+                    this.finish()
+
+                }
+
                 //Condiciones
                 if(info!!.Mensaje == "USUARIO O PASSWORD INCORRECTO O NO EXISTE"){
                     utils.progressDialog!!.dismiss()
                     Toast.makeText(this@MainActivity, info.Mensaje, Toast.LENGTH_SHORT).show()
                     binding.btnIngresar.isEnabled = true
-                } else if(info.Rui.toInt() != -1 && info.Rui.toInt() != 0){
+
+                } else if(info.Rui.toInt() != -1 && info.Rui.toInt() != 1000){
+                    val apiLevel = Build.VERSION.SDK_INT
+                    var infoDevice = "Inicio en "+getString(R.string.version)+" Andoird "+apiLevel
+                    println("--------INFO DEVICE: "+infoDevice)
+
                     utils.progressDialog!!.dismiss()
                     /*utils.stopLocationUpdates()*/
                     //utils.stopLocationUpdates()
@@ -272,6 +344,11 @@ class MainActivity : AppCompatActivity() {
                     setPreferencias()
                     println("ABRIENDO DATOS MISION ACTIVITY....")
                     //Iniciar Actividad del Datos Mision
+
+                    val registro = Registro("0",infoDevice, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@MainActivity, "TM"))
+                    //Aqui iba el mismo codigo de sendButtonData()
+                    utils.doRequest(registro, this@MainActivity)
+
                     val intent = Intent(this@MainActivity, MisionActivity::class.java)
                     startActivity(intent)
                     this@MainActivity.finish()
@@ -354,6 +431,8 @@ class MainActivity : AppCompatActivity() {
             show()
         }
     }
+
+
     //Solicita la ubicacion de este momento, en raros casos es null
     //https://developer.android.com/training/location/retrieve-current
 

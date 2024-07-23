@@ -1,7 +1,9 @@
 package com.miapp.custodio2
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.miapp.custodio2.Utils.LocationService
 import com.miapp.custodio2.Utils.Preferencias
 import com.miapp.custodio2.databinding.ActivityPerfilBinding
 
@@ -16,6 +18,11 @@ class PerfilActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnCerrarSesion.setOnClickListener {
+            Intent(applicationContext, LocationService::class.java).apply {
+                action = LocationService.SERVICE_STOP
+                startService(this)
+                //println("KKK    Termine las ubicaciones SERVICE.    KKK")
+            }
             preferencias.setGlobalData(this, "Sesion", "primera")
             finishAffinity()
         }

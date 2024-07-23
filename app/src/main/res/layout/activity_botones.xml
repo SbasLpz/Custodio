@@ -17,6 +17,14 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+<!--                        <com.google.android.material.button.MaterialButton-->
+<!--                            android:id="@+id/btnServiceStart"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            app:layout_constraintTop_toTopOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            android:text="Empezar servicio !"-->
+<!--                            />-->
 
                         <View
                             android:id="@+id/vwMarco"
@@ -76,11 +84,26 @@
                             app:layout_constraintBottom_toBottomOf="@id/ivUserPhotoApp"
                             />
 
+                    <TextView
+                        android:id="@+id/version"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/vwMarco"
+                        android:text="@string/version"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:gravity="center"
+                        android:layout_marginTop="5dp"
+                        />
+
                         <LinearLayout
                             android:id="@+id/linear"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@id/vwMarco"
+                            app:layout_constraintTop_toBottomOf="@id/version"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             android:orientation="vertical">

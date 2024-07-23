@@ -2,6 +2,9 @@ package com.miapp.custodio2
 
 import android.Manifest
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -22,7 +25,10 @@ import com.miapp.custodio2.databinding.ActivityMisionBinding
 import com.techiness.progressdialoglibrary.ProgressDialog
 import java.lang.Exception
 import androidx.lifecycle.lifecycleScope
+import com.miapp.custodio2.Utils.LocationService
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 class MisionActivity : AppCompatActivity() {
@@ -46,6 +52,10 @@ class MisionActivity : AppCompatActivity() {
         binding = ActivityMisionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         //Settings progrss dialog foto upload
+        Intent(applicationContext, LocationService::class.java).apply {
+            action = LocationService.SERVICE_START
+            startService(this)
+        }
 
         println("Hola estoy en MISION")
         //Pone la longitud y latitud en ""
@@ -128,6 +138,12 @@ class MisionActivity : AppCompatActivity() {
 
         //FIN - Obtiene la Direccion de Enrtrega
         binding.btnSiguiente.setOnClickListener {
+//            GlobalScope.launch {
+//                Intent(applicationContext, LocationService::class.java).apply {
+//                    action = LocationService.SERVICE_START
+//                    startService(this)
+//                }
+//            }
             try {
                 /*utils.stopLocationUpdates()*/
                 /*runBlocking {*/
@@ -139,36 +155,7 @@ class MisionActivity : AppCompatActivity() {
                 utils.progressDialog!!.setTitle("")
                 utils.progressDialog!!.show()
                 Codigo2()
-                //utils.progressDialog!!.dismiss()
-//                if (showDialog()){
-//                    Codigo()
-//                    utils.progressDialog!!.dismiss()
-//                }
-                //Codigo()
 
-                    /*if(preferencias.getGlobalData(this@MisionActivity, "verM") == "true"){
-                        updateData()
-                        //agregado:
-                        preferencias.setGlobalData(this@MisionActivity, "Sesion", "reanudar")
-                        //agregado fin
-                        val intent = Intent(this@MisionActivity, BotonesActivity::class.java)
-                        startActivity(intent)
-                        this@MisionActivity.finish()
-                    } else {
-                        when(preferencias.getGlobalData(this@MisionActivity, "Sesion")){
-                            "primera" -> {
-                                updateData1Sesion()
-                                primeraSesion()
-                            }
-                            else -> {}
-                        }
-                    }*/
-                    //updateData1Sesion()
-                    //primeraSesion()
-                //utils.progressDialog!!.dismiss()
-                //binding.btnSiguiente.isEnabled = true
-
-                //}
             } catch (e: Exception){
                 utils.progressDialog!!.dismiss()
                 binding.btnSiguiente.isEnabled = true

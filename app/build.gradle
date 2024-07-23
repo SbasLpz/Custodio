@@ -13,8 +13,8 @@ android {
         applicationId "com.miapp.custodio2"
         minSdk 24
         targetSdk 33
-        versionCode 6
-        versionName "3.2.1"
+        versionCode 7
+        versionName "3.7.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
