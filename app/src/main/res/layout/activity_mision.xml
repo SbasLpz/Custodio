@@ -343,6 +343,76 @@
             app:layout_constraintTop_toBottomOf="@id/tvDatosPorAgregar"/>
 
         <TextView
+            android:id="@+id/tvNombreTransportista"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre del transportista: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
+            app:layout_constraintTop_toBottomOf="@id/dv2"
+            />
+
+        <EditText
+            android:id="@+id/etNombreTransportista"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:enabled="true"
+            android:inputType="text"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/tvNombreTransportista"
+            app:layout_constraintTop_toBottomOf="@id/tvNombreTransportista"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvTelTransportista"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Teléfono del transportista: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/etNombreTransportista"
+            app:layout_constraintTop_toBottomOf="@id/etNombreTransportista"
+            />
+
+        <EditText
+            android:id="@+id/etTelTransportista"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:enabled="true"
+            android:inputType="text"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/tvTelTransportista"
+            app:layout_constraintTop_toBottomOf="@id/tvTelTransportista"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <CheckBox
+            android:id="@+id/checkboxUsoPredio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Uso de predio"
+            app:layout_constraintStart_toStartOf="@id/etTelTransportista"
+            app:layout_constraintTop_toBottomOf="@id/etTelTransportista"
+            tools:ignore="MissingConstraints" />
+
+
+        <TextView
             android:id="@+id/tvTelefonoPiloto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -351,7 +421,7 @@
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
-            app:layout_constraintTop_toBottomOf="@id/dv2"
+            app:layout_constraintTop_toBottomOf="@id/checkboxUsoPredio"
             />
 
         <EditText

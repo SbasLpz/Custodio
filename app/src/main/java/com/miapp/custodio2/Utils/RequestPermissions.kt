@@ -16,6 +16,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Base64
@@ -46,6 +47,7 @@ import org.json.JSONObject
 import retrofit2.Retrofit
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.text.SimpleDateFormat
@@ -590,6 +592,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("Au/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "Au/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -612,6 +616,10 @@ class RequestPermissions() {
             jsonObject.put("Sellado", datos.Sellado)
             jsonObject.put("Telefono", datos.Telefono)
             jsonObject.put("Token", datos.Token)
+
+            jsonObject.put("NombreTransporte", datos.NombreTransporte)
+            jsonObject.put("TelefonoTransporte", datos.TelefonoTransporte)
+            jsonObject.put("UsaPredio", datos.UsaPredio)
             val jsonObjectString = jsonObject.toString()
             val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
 
@@ -653,6 +661,8 @@ class RequestPermissions() {
             tipoErrorString = "Mis/2"
             Toast.makeText(act, "Mis/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
             errorString = "Mis/ Error de tiempo de espera de conexión: ${e.message}"
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -697,6 +707,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("Update/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "Update/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -747,6 +759,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("Foto/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "Foto/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -808,6 +822,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("ListFts/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "ListFts/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -846,6 +862,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("getBtns/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "getBtns/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -884,6 +902,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("getDirec/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "getDirec/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -917,7 +937,7 @@ class RequestPermissions() {
 
                     println("Consulta REGISTRO: "+jsonObjectString)
                     println("EXITO-REGISTRO, json="+prettyJson)
-                    println("ReadResult.Success: "+readResult.Success)
+                    //println("ReadResult.Success: "+readResult.Success)
                     infoRegistro = readResult
                 } else {
                     println("ERROR-REGISTRO: "+response.code().toString())
@@ -931,7 +951,7 @@ class RequestPermissions() {
             println("Reg/ Error de resolución de host: ${e.message}")
 
             //Looper.prepare()
-            act.runOnUiThread {
+            Handler(Looper.getMainLooper()).post {
                 MaterialAlertDialogBuilder(act)
                     .setTitle("Error de conexión con Comsi SICCAP ")
                     .setMessage("Error : ${e.message} \n\nProblemas con conexion a Comsi SICCAP, compruebe estar con conexión o sino itentelo mas tarde")
@@ -949,6 +969,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("Reg/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "Reg/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
 //        if (this.infoRegistro == null){
 //            println("INFO_RES: ES NULL ")
@@ -994,6 +1016,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("CheckMision/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "CheckMision/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -1037,6 +1061,8 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("Reg2/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "Reg2/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 

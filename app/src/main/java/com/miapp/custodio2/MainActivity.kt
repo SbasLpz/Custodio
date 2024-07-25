@@ -332,7 +332,7 @@ class MainActivity : AppCompatActivity() {
 
                 } else if(info.Rui.toInt() != -1 && info.Rui.toInt() != 1000){
                     val apiLevel = Build.VERSION.SDK_INT
-                    var infoDevice = "Inicio en "+getString(R.string.version)+" Andoird "+apiLevel
+                    var infoDevice = "Inicio en "+getString(R.string.version)+" Android "+apiLevel
                     println("--------INFO DEVICE: "+infoDevice)
 
                     utils.progressDialog!!.dismiss()
