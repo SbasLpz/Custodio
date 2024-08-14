@@ -2,9 +2,6 @@ package com.miapp.custodio2
 
 import android.Manifest
 import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -27,9 +24,7 @@ import com.techiness.progressdialoglibrary.ProgressDialog
 import java.lang.Exception
 import androidx.lifecycle.lifecycleScope
 import com.miapp.custodio2.Utils.LocationService
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 class MisionActivity : AppCompatActivity() {
@@ -353,6 +348,7 @@ class MisionActivity : AppCompatActivity() {
             binding.etTelTransportista.setText(preferencias.getGlobalData(this, "au_TelTrans"))
             binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_Trans"))
             checkboxPredio.isChecked = preferencias.getGlobalData(this, "au_UsoPredio").toBoolean()
+            binding.etNumArma.setText(preferencias.getGlobalData(this, "au_Arma"))
 
             binding.etTelefonoPiloto.setText(preferencias.getGlobalData(this, "au_Tel"))
             binding.etMarchamoFiscal.setText(preferencias.getGlobalData(this, "au_Fiscal"))
@@ -377,6 +373,9 @@ class MisionActivity : AppCompatActivity() {
         }
         if (checkboxPredio.isChecked != preferencias.getGlobalData(this, "UsoPredio").toBoolean()){
             checkboxPredio.isChecked = preferencias.getGlobalData(this, "UsoPredio").toBoolean()
+        }
+        if (binding.etNumArma.text.toString() != preferencias.getGlobalData(this, "Arma")){
+            binding.etNumArma.setText(preferencias.getGlobalData(this, "Arma"))
         }
 
 
@@ -413,6 +412,7 @@ class MisionActivity : AppCompatActivity() {
         preferencias.setGlobalData(this, "TelTrans", binding.etTelTransportista.text.toString())
         preferencias.setGlobalData(this, "Trans", binding.etNombreTransportista.text.toString())
         preferencias.setGlobalData(this, "UsoPredio", checkboxPredio.isChecked.toString())
+        preferencias.setGlobalData(this, "Arma", binding.etNumArma.text.toString())
 
         preferencias.setGlobalData(this, "Tel", binding.etTelefonoPiloto.text.toString())
         preferencias.setGlobalData(this, "Sellado", sellado)
@@ -450,6 +450,18 @@ class MisionActivity : AppCompatActivity() {
                 utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
             utils.doRequest(update, this)
             preferencias.setGlobalData(this, "UsoPredio", checkboxPredio.isChecked.toString())
+            println("UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+        }
+        //ARMA
+        if (binding.etNumArma.text.toString() != preferencias.getGlobalData(this, "Arma")){
+            //Update request
+            val update = Update("ESCOPETA", preferencias.getGlobalData(this, "Arma"), binding.etNumArma.text.toString(),
+                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+
+            utils.doRequest(update, this)
+            //Actualiza las preferencias
+            /*preferencias.updateGlobalData(this, "Tel", binding.etNumArma.text.toString())*/
+            preferencias.setGlobalData(this, "Arma", binding.etNumArma.text.toString())
             println("UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
         }
 
@@ -558,6 +570,18 @@ class MisionActivity : AppCompatActivity() {
             println("1UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
             if(utils.infoUpdate!!.Success){
                 preferencias.updateGlobalData(this, "Tel", checkboxPredio.isChecked.toString())
+            }
+        }
+        //ARMA
+        if (binding.etNumArma.text.toString() != preferencias.getGlobalData(this, "au_Arma")){
+            //Update request
+            val update = Update("ESCOPETA", preferencias.getGlobalData(this, "au_Arma"), binding.etNumArma.text.toString(),
+                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+
+            utils.doRequest(update, this)
+            println("1UPDATE Arma= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+            if(utils.infoUpdate!!.Success){
+                preferencias.updateGlobalData(this, "Arma", binding.etNumArma.text.toString())
             }
         }
 

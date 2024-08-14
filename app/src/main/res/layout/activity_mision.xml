@@ -545,7 +545,7 @@
             android:backgroundTint="@color/divisor_line_color"
             android:textColor="@color/black"
             android:textSize="15sp"
-            android:enabled="false"
+            android:enabled="true"
 
             app:layout_constraintEnd_toEndOf="@id/etPlacaTC"
             app:layout_constraintStart_toStartOf="@id/tvNumArma"

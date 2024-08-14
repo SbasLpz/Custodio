@@ -1,48 +1,24 @@
 package com.miapp.custodio2.Utils
 
-import android.Manifest
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.location.Location
 import android.os.Build
 import android.os.IBinder
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import com.bumptech.glide.Priority
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonParser
 import com.miapp.custodio2.BotonesActivity
-import com.miapp.custodio2.ClasesRequest.APIService
 import com.miapp.custodio2.ClasesRequest.Registro
-import com.miapp.custodio2.ClasesRequest.RegistroRes
 import com.miapp.custodio2.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.runBlocking
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.internal.notify
-import org.json.JSONObject
-import retrofit2.Retrofit
 
 class LocationService: Service() {
 
@@ -100,11 +76,11 @@ class LocationService: Service() {
             }
             .onEmpty {
                 println("ALGO HA PASAOO :0 x12")
-                if(botonesActivity != null) runBlocking {
-                    val registro = Registro("0","Servicio Sin Ubicación", utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(botonesActivity, "TM"))
-                    //Aqui iba el mismo codigo de sendButtonData()
-                    utils.doRequest(registro, botonesActivity)
-                }
+//                if(botonesActivity != null) runBlocking {
+//                    val registro = Registro("0","Servicio Sin Ubicación", utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(botonesActivity, "TM"))
+//                    //Aqui iba el mismo codigo de sendButtonData()
+//                    utils.doRequest(registro, botonesActivity)
+//                }
             }
             .onEach { location ->
                 val lat = location.latitude.toString()

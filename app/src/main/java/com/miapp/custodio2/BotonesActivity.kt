@@ -1,8 +1,6 @@
 package com.miapp.custodio2
 
 import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 
 import android.content.Intent
@@ -18,6 +16,12 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -33,6 +37,7 @@ import com.miapp.custodio2.databinding.ActivityBotonesBinding
 import com.techiness.progressdialoglibrary.ProgressDialog
 import kotlinx.coroutines.*
 import java.util.ArrayList
+import kotlin.Result as Result
 
 class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checker {
     //Para que funciones el Binding
@@ -53,11 +58,11 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
         binding = ActivityBotonesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        GlobalScope.launch {
-            val registro = Registro("0","Usuario en Botones", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
-            //Aqui iba el mismo codigo de sendButtonData()
-            utils.doRequest(registro, this@BotonesActivity)
-        }
+//        GlobalScope.launch {
+//            val registro = Registro("0","Usuario en Botones", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+//            //Aqui iba el mismo codigo de sendButtonData()
+//            utils.doRequest(registro, this@BotonesActivity)
+//        }
 
         connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         connManager.registerDefaultNetworkCallback(networkCallback)
@@ -116,18 +121,18 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
 
         if (utils.isServiceRunning(this, LocationService::class.java)){
             println("77777777 SERVICIO CORRIENDO 77777777")
-            runBlocking {
-                val registro = Registro("0", "Servicio ACTIVO !", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
-                //Aqui iba el mismo codigo de sendButtonData()
-                utils.doRequest(registro, this@BotonesActivity)
-            }
+//            runBlocking {
+//                val registro = Registro("0", "Servicio ACTIVO !", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+//                //Aqui iba el mismo codigo de sendButtonData()
+//                utils.doRequest(registro, this@BotonesActivity)
+//            }
         } else {
             println("77777777 // ! SERVICIO NO EJECUTANDOSE ! // 77777777")
-            runBlocking {
-                val registro = Registro("0","Servicio INACTIVO !", utils.getCurrentDate(), "0.10", "0.10", preferencias.getGlobalData(this@BotonesActivity, "TM"))
-                //Aqui iba el mismo codigo de sendButtonData()
-                utils.doRequest(registro, this@BotonesActivity)
-            }
+//            runBlocking {
+//                val registro = Registro("0","Servicio INACTIVO !", utils.getCurrentDate(), "0.10", "0.10", preferencias.getGlobalData(this@BotonesActivity, "TM"))
+//                //Aqui iba el mismo codigo de sendButtonData()
+//                utils.doRequest(registro, this@BotonesActivity)
+//            }
         }
 
         //Boton de la MISION
@@ -161,11 +166,11 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                 this@BotonesActivity.finishAffinity()
             }
         }
-        GlobalScope.launch(Dispatchers.Main) {
-            val registro = Registro("0","Usuario en Botones", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
-            //Aqui iba el mismo codigo de sendButtonData()
-            utils.doRequest(registro, this@BotonesActivity)
-        }
+//        GlobalScope.launch(Dispatchers.Main) {
+//            val registro = Registro("0","Usuario en Botones", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+//            //Aqui iba el mismo codigo de sendButtonData()
+//            utils.doRequest(registro, this@BotonesActivity)
+//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -220,12 +225,56 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             startService(this)
             println("KKK    Termine las ubicaciones SERVICE.    KKK")
         }
-        GlobalScope.launch {
-            val registro = Registro("0","Se CERRO la app !!", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
-            //Aqui iba el mismo codigo de sendButtonData()
-            utils.doRequest(registro, this@BotonesActivity)
-        }
+//        GlobalScope.launch {
+//            val registro = Registro("0","Se CERRO la app !!", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+//            //Aqui iba el mismo codigo de sendButtonData()
+//            utils.doRequest(registro, this@BotonesActivity)
+//        }
+        var tipo = 0
+        var acc = "Se CERRO la app !!"
+        var date = utils.getCurrentDate()
+        var latt =  LocationService.lat0
+        var longg = LocationService.long0
+        var tkn = preferencias.getGlobalData(this@BotonesActivity, "TM")
+        sendOnDestroyRegisger(tipo, acc, date, latt, longg, tkn)
         println("888888888888888888  CERRE LA APP  8888888888888888888")
+    }
+
+    fun sendOnDestroyRegisger(tipo: Int, acc:String, date:String, latt:String, longg:String, tkn:String) {
+        val reApi = OneTimeWorkRequestBuilder<UpdloaWorker>()
+            .setInputData(
+                workDataOf(
+                    "tipo" to tipo, "acc" to acc, "date" to date,
+                    "latt" to latt, "longg" to longg, "tkn" to tkn
+                ),
+            )
+        val workManager = WorkManager.getInstance(application)
+        val continuation = workManager.beginWith(reApi.build())
+
+        continuation.enqueue()
+    }
+    class UpdloaWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+        //val apiReq = inputData.ge.getString(KEY_IMAGE_URI)
+        override suspend fun doWork(): Result {
+            return try {
+                val tipo = inputData.getInt("tipo", 0)
+                val acc = inputData.getString("acc")
+                val date = inputData.getString("date")
+                val latt = inputData.getString("latt")
+                val longg = inputData.getString("longg")
+                val tkn = inputData.getString("tkn")
+                val registro = Registro(tipo.toString(), acc.toString(), date.toString(), latt.toString(), longg.toString(), tkn.toString())
+                RequestPermissions().registro(registro, null)
+                Result.success()
+            } catch (e: Exception){
+                print("Exception en el Registro de Salida de la app.")
+                Result.failure()
+            } catch (e: java.lang.Exception){
+                print("Exception en el Registro de Salida de la app.")
+                Result.failure()
+            }
+        }
+
     }
     override fun onPause() {
         super.onPause()

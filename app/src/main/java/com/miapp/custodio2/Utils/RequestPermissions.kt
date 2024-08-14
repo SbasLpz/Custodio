@@ -3,7 +3,6 @@ package com.miapp.custodio2.Utils
 import android.Manifest
 import android.app.Activity
 import android.app.ActivityManager
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -12,30 +11,23 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.Network
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Base64
-import android.widget.EditText
 import android.widget.Toast
-import androidx.core.R
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.getSystemService
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
@@ -47,7 +39,6 @@ import org.json.JSONObject
 import retrofit2.Retrofit
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
-import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.text.SimpleDateFormat
@@ -521,6 +512,7 @@ class RequestPermissions() {
             act.startActivity(intent)
         } else {
             Toast.makeText(act, "Telefono para llamada no proveido", Toast.LENGTH_SHORT).show()
+            progressDialog!!.dismiss()
         }
     }
 
@@ -907,11 +899,13 @@ class RequestPermissions() {
         }
     }
 
-    suspend fun registro(datos: Registro, act: Activity){
+    suspend fun registro(datos: Registro, act: Activity?){
         try {
 
             val retrofit = Retrofit.Builder()
-                .baseUrl(act.getString(com.miapp.custodio2.R.string.UrlBase))
+                .baseUrl(
+                    if(act != null)act.getString(com.miapp.custodio2.R.string.UrlBase) else "https://siccap.corporacioncomsi.com:27782/ComsiApp.svc/"
+                )
                 .build()
             val service = retrofit.create(APIService::class.java)
             val jsonObject = JSONObject()
@@ -945,13 +939,13 @@ class RequestPermissions() {
                     errorString = "ERROR-REGISTRO: "+response.code().toString()+" CONSULTA: "+jsonObjectString
                 }
             } catch (e: SocketTimeoutException){
-                Toast.makeText(act, "Intente de nuevo. La conexión con la API fallo", Toast.LENGTH_LONG).show()
+                if(datos.Accion != "Se CERRO la app !!") Toast.makeText(act, "Intente de nuevo. La conexión con la API fallo", Toast.LENGTH_LONG).show()
             }
         } catch (e: UnknownHostException){
             println("Reg/ Error de resolución de host: ${e.message}")
 
             //Looper.prepare()
-            Handler(Looper.getMainLooper()).post {
+            if(datos.Accion != "Se CERRO la app !!" && act != null) Handler(Looper.getMainLooper()).post {
                 MaterialAlertDialogBuilder(act)
                     .setTitle("Error de conexión con Comsi SICCAP ")
                     .setMessage("Error : ${e.message} \n\nProblemas con conexion a Comsi SICCAP, compruebe estar con conexión o sino itentelo mas tarde")
@@ -961,16 +955,17 @@ class RequestPermissions() {
                     }
                     .show()
 
-                Toast.makeText(act, "Reg/ Error comunicación con host, verfique que tenga conexión a Internet", Toast.LENGTH_LONG).show()
+                if(datos.Accion != "Se CERRO la app !!") Toast.makeText(act, "Reg/ Error comunicación con host, verfique que tenga conexión a Internet", Toast.LENGTH_LONG).show()
             }
             //Looper.loop()
 
 
         } catch (e: SocketTimeoutException) {
             println("Reg/ Error de tiempo de espera de conexión: ${e.message}")
-            Toast.makeText(act, "Reg/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+            if(datos.Accion != "Se CERRO la app !!")Toast.makeText(act, "Reg/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
+            println("Error de comunicación con el servidor. Verifique su conexión a Internet.")
+            if(datos.Accion != "Se CERRO la app !!")Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
 //        if (this.infoRegistro == null){
 //            println("INFO_RES: ES NULL ")

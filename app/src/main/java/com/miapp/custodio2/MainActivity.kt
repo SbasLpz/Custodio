@@ -1,15 +1,12 @@
 package com.miapp.custodio2
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -23,14 +20,11 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.miapp.custodio2.ClasesRequest.Inicio
 import com.miapp.custodio2.ClasesRequest.Registro
 import com.miapp.custodio2.Utils.Actualizaciones
-import com.miapp.custodio2.Utils.LocationService
 import com.miapp.custodio2.Utils.Preferencias
 import com.miapp.custodio2.Utils.RequestPermissions
 import com.miapp.custodio2.databinding.ActivityMainBinding
 import com.techiness.progressdialoglibrary.ProgressDialog
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -306,23 +300,23 @@ class MainActivity : AppCompatActivity() {
 
                 //info!!.Rui = 0
 
-                if (info!!.Rui == null || info!!.Rui == 0){
-                    utils.progressDialog?.dismiss()
-                    Toast.makeText(this@MainActivity, "Mision no asignada", Toast.LENGTH_SHORT).show()
-                    binding.btnIngresar.isEnabled = true
-                    /** 3 DATOS QUE OBTENDRA INFO ACT **/
-                    println("PRIMER USOOOOOOOOOOO: "+info.PrimerUso)
-                    preferencias.setGlobalData(this@MainActivity, "PrimerUso",  info.PrimerUso)
-                    preferencias.setGlobalData(this@MainActivity, "UltimoUso", info.UltimoUso)
-                    preferencias.setGlobalData(this@MainActivity, "TotalServiciosApp", info.TotalServiciosApp)
-                    preferencias.setGlobalData(this@MainActivity, "TotalServiciosMes", info.TotalServiciosApp)
-                    preferencias.setGlobalData(this@MainActivity, "NombreCustodio", info.NombreCustodio)
-                    binding.btnIngresar.isEnabled = true
-                    val intent = Intent(this@MainActivity, InfoActivity::class.java)
-                    startActivity(intent)
-                    this.finish()
-
-                }
+//                if (info!!.Rui == null || info!!.Rui == 0){
+//                    utils.progressDialog?.dismiss()
+//                    Toast.makeText(this@MainActivity, "Mision no asignada", Toast.LENGTH_SHORT).show()
+//                    binding.btnIngresar.isEnabled = true
+//                    /** 3 DATOS QUE OBTENDRA INFO ACT **/
+//                    println("PRIMER USOOOOOOOOOOO: "+info.PrimerUso)
+//                    preferencias.setGlobalData(this@MainActivity, "PrimerUso",  info.PrimerUso)
+//                    preferencias.setGlobalData(this@MainActivity, "UltimoUso", info.UltimoUso)
+//                    preferencias.setGlobalData(this@MainActivity, "TotalServiciosApp", info.TotalServiciosApp)
+//                    preferencias.setGlobalData(this@MainActivity, "TotalServiciosMes", info.TotalServiciosApp)
+//                    preferencias.setGlobalData(this@MainActivity, "NombreCustodio", info.NombreCustodio)
+//                    binding.btnIngresar.isEnabled = true
+//                    val intent = Intent(this@MainActivity, InfoActivity::class.java)
+//                    startActivity(intent)
+//                    this.finish()
+//                    return
+//                }
 
                 //Condiciones
                 if(info!!.Mensaje == "USUARIO O PASSWORD INCORRECTO O NO EXISTE"){
@@ -330,7 +324,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, info.Mensaje, Toast.LENGTH_SHORT).show()
                     binding.btnIngresar.isEnabled = true
 
-                } else if(info.Rui.toInt() != -1 && info.Rui.toInt() != 1000){
+                } else if(info.Rui.toInt() != -1 && info.Rui.toInt() != 1000 && info.Rui != 0 && info.Rui != null){
                     val apiLevel = Build.VERSION.SDK_INT
                     var infoDevice = "Inicio en "+getString(R.string.version)+" Android "+apiLevel
                     println("--------INFO DEVICE: "+infoDevice)
@@ -345,9 +339,9 @@ class MainActivity : AppCompatActivity() {
                     println("ABRIENDO DATOS MISION ACTIVITY....")
                     //Iniciar Actividad del Datos Mision
 
-                    val registro = Registro("0",infoDevice, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@MainActivity, "TM"))
+                    //val registro = Registro("0",infoDevice, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@MainActivity, "TM"))
                     //Aqui iba el mismo codigo de sendButtonData()
-                    utils.doRequest(registro, this@MainActivity)
+                    //utils.doRequest(registro, this@MainActivity)
 
                     val intent = Intent(this@MainActivity, MisionActivity::class.java)
                     startActivity(intent)

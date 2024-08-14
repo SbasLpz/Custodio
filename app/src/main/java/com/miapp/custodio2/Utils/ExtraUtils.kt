@@ -1,7 +1,6 @@
 package com.miapp.custodio2.Utils
 
 import android.content.Context
-import android.widget.TextView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.GsonBuilder
@@ -37,18 +36,18 @@ class ExtraUtils: FirebaseMessagingService() {
 
             if (utils.isServiceRunning(this, LocationService::class.java)){
                 //println("77777777 SERVICIO CORRIENDO 77777777")
-                if(botonesActivity != null) runBlocking {
-                    val registro = Registro("0","Servicio ACTIVO", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(botonesActivity, "TM"))
-                    //Aqui iba el mismo codigo de sendButtonData()
-                    utils.doRequest(registro, botonesActivity)
-                }
+//                if(botonesActivity != null) runBlocking {
+//                    val registro = Registro("0","Servicio ACTIVO", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(botonesActivity, "TM"))
+//                    //Aqui iba el mismo codigo de sendButtonData()
+//                    utils.doRequest(registro, botonesActivity)
+//                }
             } else {
                 println("77777777 // ! SERVICIO NO EJECUTANDOSE ! // 77777777")
-                if (botonesActivity != null) runBlocking {
-                    val registro = Registro("0","Servicio INACTIVO", utils.getCurrentDate(), "0.2000", "0.2000", preferencias.getGlobalData(botonesActivity, "TM"))
-                    //Aqui iba el mismo codigo de sendButtonData()
-                    utils.doRequest(registro, botonesActivity)
-                }
+//                if (botonesActivity != null) runBlocking {
+//                    val registro = Registro("0","Servicio INACTIVO", utils.getCurrentDate(), "0.2000", "0.2000", preferencias.getGlobalData(botonesActivity, "TM"))
+//                    //Aqui iba el mismo codigo de sendButtonData()
+//                    utils.doRequest(registro, botonesActivity)
+//                }
             }
 
             runBlocking {

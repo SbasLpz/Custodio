@@ -8,13 +8,13 @@ plugins {
 
 android {
     compileSdk 33
-
+    //la version anterior era la 3.7.0
     defaultConfig {
         applicationId "com.miapp.custodio2"
         minSdk 24
         targetSdk 33
         versionCode 7
-        versionName "3.7.0"
+        versionName "3.8.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -69,6 +69,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:30.3.2')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
+
+    implementation "androidx.work:work-runtime-ktx:2.8.0"
     //Progress bar
     //implementation 'com.github.Turaiiao:FuckProgress:0.0.2'
     //Glide
