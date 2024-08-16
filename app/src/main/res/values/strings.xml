@@ -4,7 +4,17 @@
     <string name="UrlBase">https://siccap.corporacioncomsi.com:27782/ComsiApp.svc/</string>
     <string name="recordatorio">Recuerde: Si los datos de la unidad NO COINCIDEN con los que se muestran acá. Debe <u><b>informar de inmediato a la central y esperar instrucciones antes de iniciar ruta.</b></u></string>
     <string name="prueba">PRUEBA</string>
-    <string name="version">V-3.9.4</string>
+    <string name="version">V-3.8.0</string>
     <string name="nFbReceive">0</string>
     <string name="askPermisos">Se necesitan tener los siguientes permisos:\n-Alamcenamiento\n-Ubicación\n-Camara\n-Llamadas\n-Notificaciones\nAjustes -> Aplicaciones -> Comsi Custodio -> Permisos</string>
+    <string-array name="your_options_array">
+        <item>Ninguno</item>
+        <item>Guatemala</item>
+        <item>El Salvador</item>
+        <item>Honduras</item>
+        <item>Nicaragua</item>
+        <item>Costa Rica</item>
+        <item>Panamá</item>
+        <!-- Agrega más opciones aquí -->
+    </string-array>
 </resources>

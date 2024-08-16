@@ -115,6 +115,12 @@ class RequestPermissions() {
                 android.Manifest.permission.CAMERA, android.Manifest.permission.READ_MEDIA_IMAGES, android.Manifest.permission.CALL_PHONE, Manifest.permission.POST_NOTIFICATIONS)
         }
 
+        if(Build.VERSION.SDK_INT >= 14) {
+            permisos = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.CAMERA, android.Manifest.permission.READ_MEDIA_IMAGES, android.Manifest.permission.CALL_PHONE, Manifest.permission.POST_NOTIFICATIONS,
+                Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        }
+
         println("Permisos: ")
         for (k in permisos) {
             println("PP: "+k)

@@ -8,11 +8,16 @@ import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.get
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -39,6 +44,10 @@ class MisionActivity : AppCompatActivity() {
     private lateinit var checkboxPredio: CheckBox
 
     var esPrimeraVez = false
+    private lateinit var spinner: Spinner
+    private lateinit var selectedSpinner: String
+    var selectedSpinnerInt: Int = 7
+    private lateinit var adapterSpinner: ArrayAdapter<CharSequence>
     //var progressDialog2: android.app.ProgressDialog? = null
     //Progress dialog
     //private lateinit var progressDialog: ProgressDialog
@@ -48,6 +57,31 @@ class MisionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMisionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        spinner = binding.spinner
+        adapterSpinner = ArrayAdapter.
+        createFromResource(this, R.array.your_options_array, android.R.layout.simple_spinner_dropdown_item)
+
+        adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapterSpinner
+        spinner.setSelection(0)
+
+        selectedSpinner = spinner.getItemAtPosition(0).toString()
+
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, p1: View?, position: Int, id: Long) {
+                selectedSpinner = parent?.getItemAtPosition(position).toString()
+                selectedSpinnerInt = position
+                println("******* SELECTED del Spinner: ${selectedSpinner} ********")
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                // Do something
+                selectedSpinner = spinner.getItemAtPosition(0).toString()
+                selectedSpinnerInt = 7
+            }
+        }
+
         //Settings progrss dialog foto upload
         Intent(applicationContext, LocationService::class.java).apply {
             action = LocationService.SERVICE_START
@@ -143,6 +177,7 @@ class MisionActivity : AppCompatActivity() {
 //                    startService(this)
 //                }
 //            }
+            println("******* btnSiguiente - SELECTED del Spinner: ${selectedSpinner} ********")
             try {
                 /*utils.stopLocationUpdates()*/
                 /*runBlocking {*/
@@ -345,6 +380,7 @@ class MisionActivity : AppCompatActivity() {
         //venga del /Autenticar
         if (preferencias.getGlobalData(this, "verM") != "true"){
             //Editables
+            spinner.setSelection(preferencias.getGlobalData(this, "au_Pais").toInt())
             binding.etTelTransportista.setText(preferencias.getGlobalData(this, "au_TelTrans"))
             binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_Trans"))
             checkboxPredio.isChecked = preferencias.getGlobalData(this, "au_UsoPredio").toBoolean()
@@ -364,6 +400,10 @@ class MisionActivity : AppCompatActivity() {
 
     //Se encarga de cargar los datos que fueron actualizados
     private fun loadDatosUpdated(){
+
+        if (selectedSpinnerInt != preferencias.getGlobalData(this, "Pais").toInt()){
+            spinner.setSelection(preferencias.getGlobalData(this, "Pais").toInt())
+        }
 
         if (binding.etTelTransportista.text.toString() != preferencias.getGlobalData(this, "TelTrans")){
             binding.etTelTransportista.setText(preferencias.getGlobalData(this, "TelTrans"))
@@ -409,6 +449,8 @@ class MisionActivity : AppCompatActivity() {
     //Establece los campos editables como preferencias
     //Se establcen la primera vez que se inica sesion Sesion = primera
     private fun setPreferencias(){
+        preferencias.setGlobalData(this, "Pais", selectedSpinnerInt.toString())
+
         preferencias.setGlobalData(this, "TelTrans", binding.etTelTransportista.text.toString())
         preferencias.setGlobalData(this, "Trans", binding.etNombreTransportista.text.toString())
         preferencias.setGlobalData(this, "UsoPredio", checkboxPredio.isChecked.toString())
@@ -424,6 +466,14 @@ class MisionActivity : AppCompatActivity() {
     //Actualizara las preferencias editables que han sido modificadas
     //Este se usa mas que nada cuando el Sesion es de tipo 3 - Cuendo se esta en Botones
     private suspend fun updateData(){
+        if (selectedSpinnerInt != preferencias.getGlobalData(this, "Pais").toInt()){
+            //Update request
+            val update = Update("PAIS", preferencias.getGlobalData(this, "Pais"), selectedSpinnerInt.toString(),
+                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+            utils.doRequest(update, this)
+            preferencias.setGlobalData(this, "Pais", selectedSpinnerInt.toString())
+            println("UPDATE PAIS= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+        }
         if (binding.etTelTransportista.text.toString() != preferencias.getGlobalData(this, "TelTrans")){
             //Update request
             val update = Update("TELEFONOTRANSPORTE", preferencias.getGlobalData(this, "TelTrans"), binding.etTelTransportista.text.toString(),
@@ -534,6 +584,17 @@ class MisionActivity : AppCompatActivity() {
             return
         } else {
             println("UNNN_OHAYOOOO: "+utils.tipoErrorString)
+        }
+        if (selectedSpinnerInt != preferencias.getGlobalData(this, "au_Pais").toInt()){
+            //Update request
+            val update = Update("PAIS", preferencias.getGlobalData(this, "au_Pais"), selectedSpinnerInt.toString(),
+                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+
+            utils.doRequest(update, this)
+            println("1UPDATE Pais= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+            if(utils.infoUpdate!!.Success){
+                preferencias.updateGlobalData(this, "Pais", selectedSpinnerInt.toString())
+            }
         }
         if (binding.etTelTransportista.text.toString() != preferencias.getGlobalData(this, "au_TelTrans")){
             //Update request
@@ -655,7 +716,7 @@ class MisionActivity : AppCompatActivity() {
             binding.etNotas.text.toString(), preferencias.getGlobalData(this@MisionActivity, "Rui"), binding.etNombrePiloto.text.toString(),
             binding.etPlacaCabezal.text.toString(), sellado, binding.etTelefonoPiloto.text.toString(),
             preferencias.getGlobalData(this@MisionActivity, "TM"), binding.etTelTransportista.text.toString(),
-            binding.etNombreTransportista.text.toString(), if (checkboxPredio.isChecked) "1" else "0")
+            binding.etNombreTransportista.text.toString(), if (checkboxPredio.isChecked) "1" else "0", /*selectedSpinnerInt.toString()*/)
 
         //Establece los campos modificables como preferencias
         setPreferencias()
