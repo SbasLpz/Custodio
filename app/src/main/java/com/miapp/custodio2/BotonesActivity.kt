@@ -380,6 +380,10 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                     cerrarAlert("Puesto de Registro")
                     responseRequest(name)
                 }
+                "Finalizar" -> {
+                    /** Abrir nueva actividad **/
+                    startActivity(Intent(this@BotonesActivity, FinalizarActivity::class.java))
+                }
                 else ->{
                     utils.doRequest(registro, this@BotonesActivity)
                     responseRequest(name)

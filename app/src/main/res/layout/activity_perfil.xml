@@ -59,4 +59,29 @@
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="0.126" />
 
+    <TextView
+        android:id="@+id/txtPoliticasTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Políticas de privacidad:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.621" />
+
+    <TextView
+        android:id="@+id/txtPoliticas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="http://comsigps.com/privacy.html"
+        android:textSize="16sp"
+        android:textColorLink="@color/purple_500"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtPoliticasTitle"
+        app:layout_constraintVertical_bias="0.126" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

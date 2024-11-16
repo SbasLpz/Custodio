@@ -84,6 +84,8 @@ class RequestPermissions() {
     var infoDireccion: EnvioRes? = null
     var infoRegistro: RegistroRes? = null
     var infoCheck: CheckRes? = null
+    var infoFinalizar:FinalizarRes? = null
+    var infoCheckFinalizar:CheckFinalizarRes? = null
 
     //Foto del marchamo fiscal
     var foto = ""
@@ -537,6 +539,8 @@ class RequestPermissions() {
             is Envio -> getDireccion(datos, act)
             is Registro -> registro(datos, act)
             is Check -> checkMision(datos, act)
+
+            is Finalizar -> finalizar(datos, act)
             else -> println("ELSE WHEN")
         }
     }
@@ -1062,6 +1066,119 @@ class RequestPermissions() {
         } catch (e: SocketTimeoutException) {
             println("Reg2/ Error de tiempo de espera de conexión: ${e.message}")
             Toast.makeText(act, "Reg2/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    suspend fun finalizar(datos: Finalizar, act: Activity){
+        try {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(act.getString(com.miapp.custodio2.R.string.UrlBase))
+                .build()
+            val service = retrofit.create(APIService::class.java)
+            val jsonObject = JSONObject()
+
+            jsonObject.put("UsaPredio", datos.UsaPredio)
+            jsonObject.put("Marchamo", datos.UsoTrifoliar)
+
+            val jsonObjectString = jsonObject.toString()
+            val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+
+            val response = service.endFinalizar(requestBody)
+            if (response.isSuccessful) {
+                //Obtiene la respuesta del request y la pasa a JSON
+                val gson = GsonBuilder().setPrettyPrinting().create()
+                val prettyJson = gson.toJson(JsonParser.parseString(response.body()?.string()))
+                //El JSON lo pasas a objeto tipo Autenticar (readREsult)
+                val gson2 = GsonBuilder().setPrettyPrinting().create()
+                val readResult:FinalizarRes = gson2.fromJson(prettyJson, FinalizarRes::class.java)
+
+                println("Datos Enviados a Finalizar: "+jsonObjectString)
+                println("EXITO-Finalizar, json="+prettyJson)
+                infoFinalizar = readResult
+            } else {
+                println("ERROR-Finalizar: "+response.code().toString())
+                println("Consulta Hecha: "+jsonObjectString)
+                infoFinalizar = null
+            }
+        } catch (e: UnknownHostException){
+            println("Finalizar/ Error de resolución de host: ${e.message}")
+            tipoErrorString = "Finalizar/1"
+
+            MaterialAlertDialogBuilder(act)
+                .setTitle("Error de conexion con Comsi SICCAP ")
+                .setMessage("Error ${e.localizedMessage}: ${e.message} \n\nProblemas con conexion a Comsi SICCAP, compruebe estar con conexión sino itente mas tarde")
+                .setNeutralButton("Aceptar") { dialog, which ->
+                    // Respond to neutral button press
+                    return@setNeutralButton
+                }
+                .show()
+
+            Toast.makeText(act, "Finalizar/ Error comunicación con host, verfique que tenga conexión a Internet", Toast.LENGTH_LONG).show()
+            errorString = "Finalizar/ Error de resolución de host: ${e.message}"
+            return
+        } catch (e: SocketTimeoutException) {
+            println("Finalizar/ Error de tiempo de espera de conexión: ${e.message}")
+            tipoErrorString = "Finalizar/2"
+            Toast.makeText(act, "Mis/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+            errorString = "Finalizar/ Error de tiempo de espera de conexión: ${e.message}"
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    suspend fun cheackFinalizar(datos: CheckFinalizar, act: Activity){
+        try {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(act.getString(com.miapp.custodio2.R.string.UrlBase))
+                .build()
+            val service = retrofit.create(APIService::class.java)
+            val jsonObject = JSONObject()
+
+            jsonObject.put("Numero", datos.Numero)
+
+            val jsonObjectString = jsonObject.toString()
+            val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+
+            val response = service.endCheckFinalizar(requestBody)
+            if (response.isSuccessful) {
+                //Obtiene la respuesta del request y la pasa a JSON
+                val gson = GsonBuilder().setPrettyPrinting().create()
+                val prettyJson = gson.toJson(JsonParser.parseString(response.body()?.string()))
+                //El JSON lo pasas a objeto tipo Autenticar (readREsult)
+                val gson2 = GsonBuilder().setPrettyPrinting().create()
+                val readResult:CheckFinalizarRes = gson2.fromJson(prettyJson, CheckFinalizarRes::class.java)
+
+                println("Datos Enviados a CheckFinalizar: "+jsonObjectString)
+                println("EXITO-CheckFinalizar, json="+prettyJson)
+                infoCheckFinalizar = readResult
+            } else {
+                println("ERROR-CheckFinalizar: "+response.code().toString())
+                println("Consulta Hecha: "+jsonObjectString)
+                infoCheckFinalizar = null
+            }
+        } catch (e: UnknownHostException){
+            println("CheckFinalizar/ Error de resolución de host: ${e.message}")
+            tipoErrorString = "CheckFinalizar/1"
+
+            MaterialAlertDialogBuilder(act)
+                .setTitle("Error de conexion con Comsi SICCAP ")
+                .setMessage("Error ${e.localizedMessage}: ${e.message} \n\nProblemas con conexion a Comsi SICCAP, compruebe estar con conexión sino itente mas tarde")
+                .setNeutralButton("Aceptar") { dialog, which ->
+                    // Respond to neutral button press
+                    return@setNeutralButton
+                }
+                .show()
+
+            Toast.makeText(act, "CheckFinalizar/ Error comunicación con host, verfique que tenga conexión a Internet", Toast.LENGTH_LONG).show()
+            errorString = "CheckFinalizar/ Error de resolución de host: ${e.message}"
+            return
+        } catch (e: SocketTimeoutException) {
+            println("CheckFinalizar/ Error de tiempo de espera de conexión: ${e.message}")
+            tipoErrorString = "CheckFinalizar/2"
+            Toast.makeText(act, "Mis/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+            errorString = "CheckFinalizar/ Error de tiempo de espera de conexión: ${e.message}"
         } catch (e: Exception) {
             Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }

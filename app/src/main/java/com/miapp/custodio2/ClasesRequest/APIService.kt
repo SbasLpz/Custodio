@@ -52,4 +52,11 @@ interface APIService {
     @POST("CheckMision")
     suspend fun endCheckMission(@Body requestBody: RequestBody): retrofit2.Response<ResponseBody>
 
+    /** Cambiar Finalizar por el nombre de la API para el Endpoint **/
+    @POST("Finalizar")
+    suspend fun endFinalizar(@Body requestBody: RequestBody): retrofit2.Response<ResponseBody>
+    @POST("CheckFinalizar")
+    suspend fun endCheckFinalizar(@Body requestBody: RequestBody): retrofit2.Response<ResponseBody>
+
+
 }

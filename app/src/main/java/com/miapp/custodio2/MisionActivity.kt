@@ -34,19 +34,19 @@ import kotlinx.coroutines.launch
 
 class MisionActivity : AppCompatActivity() {
     //Para que funciones el Binding
-    private lateinit var binding: ActivityMisionBinding
+    private lateinit var binding: com.miapp.custodio2.databinding.ActivityMisionBinding
     //Utils donde esta funciones genericas
     val utils = RequestPermissions()
     val preferencias = Preferencias()
     var sellado = "nada"
     //new
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var checkboxPredio: CheckBox
+    //private lateinit var checkboxPredio: CheckBox
 
     var esPrimeraVez = false
     private lateinit var spinner: Spinner
     private lateinit var selectedSpinner: String
-    var selectedSpinnerInt: Int = 7
+    var selectedSpinnerInt: Int = 0
     private lateinit var adapterSpinner: ArrayAdapter<CharSequence>
     //var progressDialog2: android.app.ProgressDialog? = null
     //Progress dialog
@@ -78,7 +78,7 @@ class MisionActivity : AppCompatActivity() {
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 // Do something
                 selectedSpinner = spinner.getItemAtPosition(0).toString()
-                selectedSpinnerInt = 7
+                selectedSpinnerInt = 0
             }
         }
 
@@ -88,7 +88,7 @@ class MisionActivity : AppCompatActivity() {
             startService(this)
         }
 
-        checkboxPredio = binding.checkboxUsoPredio
+        //checkboxPredio = binding.checkboxUsoPredio
 
         println("Hola estoy en MISION")
         //Pone la longitud y latitud en ""
@@ -381,9 +381,13 @@ class MisionActivity : AppCompatActivity() {
         if (preferencias.getGlobalData(this, "verM") != "true"){
             //Editables
             spinner.setSelection(preferencias.getGlobalData(this, "au_Pais").toInt())
+            binding.etHoraPos.setText(preferencias.getGlobalData(this, "au_HoraPos"))
+            binding.etHoraSolicitada.setText(preferencias.getGlobalData(this, "au_HoraSol"))
+            binding.etLugarPos.setText(preferencias.getGlobalData(this, "au_Lugar"))
+
             binding.etTelTransportista.setText(preferencias.getGlobalData(this, "au_TelTrans"))
             binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_Trans"))
-            checkboxPredio.isChecked = preferencias.getGlobalData(this, "au_UsoPredio").toBoolean()
+            //checkboxPredio.isChecked = preferencias.getGlobalData(this, "au_UsoPredio").toBoolean()
             binding.etNumArma.setText(preferencias.getGlobalData(this, "au_Arma"))
 
             binding.etTelefonoPiloto.setText(preferencias.getGlobalData(this, "au_Tel"))
@@ -400,9 +404,10 @@ class MisionActivity : AppCompatActivity() {
 
     //Se encarga de cargar los datos que fueron actualizados
     private fun loadDatosUpdated(){
+        val valor = if (preferencias.getGlobalData(this, "Pais").toInt() == 7) 0 else preferencias.getGlobalData(this, "Pais").toInt()
 
-        if (selectedSpinnerInt != preferencias.getGlobalData(this, "Pais").toInt()){
-            spinner.setSelection(preferencias.getGlobalData(this, "Pais").toInt())
+        if (selectedSpinnerInt != valor){
+            spinner.setSelection(valor)
         }
 
         if (binding.etTelTransportista.text.toString() != preferencias.getGlobalData(this, "TelTrans")){
@@ -411,9 +416,9 @@ class MisionActivity : AppCompatActivity() {
         if (binding.etNombreTransportista.text.toString() != preferencias.getGlobalData(this, "Trans")){
             binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "Trans"))
         }
-        if (checkboxPredio.isChecked != preferencias.getGlobalData(this, "UsoPredio").toBoolean()){
-            checkboxPredio.isChecked = preferencias.getGlobalData(this, "UsoPredio").toBoolean()
-        }
+//        if (checkboxPredio.isChecked != preferencias.getGlobalData(this, "UsoPredio").toBoolean()){
+//            checkboxPredio.isChecked = preferencias.getGlobalData(this, "UsoPredio").toBoolean()
+//        }
         if (binding.etNumArma.text.toString() != preferencias.getGlobalData(this, "Arma")){
             binding.etNumArma.setText(preferencias.getGlobalData(this, "Arma"))
         }
@@ -422,9 +427,9 @@ class MisionActivity : AppCompatActivity() {
         if (binding.etTelefonoPiloto.text.toString() != preferencias.getGlobalData(this, "Tel")){
             binding.etTelefonoPiloto.setText(preferencias.getGlobalData(this, "Tel"))
         }
-        if (checkboxPredio.isChecked != preferencias.getGlobalData(this, "UsoPredio").toBoolean()){
-            checkboxPredio.isChecked = preferencias.getGlobalData(this, "UsoPredio").toBoolean()
-        }
+//        if (checkboxPredio.isChecked != preferencias.getGlobalData(this, "UsoPredio").toBoolean()){
+//            checkboxPredio.isChecked = preferencias.getGlobalData(this, "UsoPredio").toBoolean()
+//        }
 
         if (binding.etMarchamoFiscal.text.toString() != preferencias.getGlobalData(this, "M_Fiscal")){
             binding.etMarchamoFiscal.setText(preferencias.getGlobalData(this, "M_Fiscal"))
@@ -449,11 +454,12 @@ class MisionActivity : AppCompatActivity() {
     //Establece los campos editables como preferencias
     //Se establcen la primera vez que se inica sesion Sesion = primera
     private fun setPreferencias(){
-        preferencias.setGlobalData(this, "Pais", selectedSpinnerInt.toString())
+        val valor = if (selectedSpinnerInt == 0) "7" else selectedSpinnerInt.toString()
+        preferencias.setGlobalData(this, "Pais", valor)
 
         preferencias.setGlobalData(this, "TelTrans", binding.etTelTransportista.text.toString())
         preferencias.setGlobalData(this, "Trans", binding.etNombreTransportista.text.toString())
-        preferencias.setGlobalData(this, "UsoPredio", checkboxPredio.isChecked.toString())
+        //preferencias.setGlobalData(this, "UsoPredio", checkboxPredio.isChecked.toString())
         preferencias.setGlobalData(this, "Arma", binding.etNumArma.text.toString())
 
         preferencias.setGlobalData(this, "Tel", binding.etTelefonoPiloto.text.toString())
@@ -466,12 +472,15 @@ class MisionActivity : AppCompatActivity() {
     //Actualizara las preferencias editables que han sido modificadas
     //Este se usa mas que nada cuando el Sesion es de tipo 3 - Cuendo se esta en Botones
     private suspend fun updateData(){
-        if (selectedSpinnerInt != preferencias.getGlobalData(this, "Pais").toInt()){
+        val valor = if (preferencias.getGlobalData(this, "Pais").toInt() == 7) 0 else preferencias.getGlobalData(this, "Pais").toInt()
+
+        if (selectedSpinnerInt != valor){
+            val valor2 = if (selectedSpinnerInt == 0) "7" else selectedSpinnerInt.toString()
             //Update request
-            val update = Update("PAIS", preferencias.getGlobalData(this, "Pais"), selectedSpinnerInt.toString(),
+            val update = Update("PAIS", preferencias.getGlobalData(this, "Pais"), valor2,
                 utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
             utils.doRequest(update, this)
-            preferencias.setGlobalData(this, "Pais", selectedSpinnerInt.toString())
+            preferencias.setGlobalData(this, "Pais", valor2)
             println("UPDATE PAIS= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
         }
         if (binding.etTelTransportista.text.toString() != preferencias.getGlobalData(this, "TelTrans")){
@@ -490,18 +499,18 @@ class MisionActivity : AppCompatActivity() {
             preferencias.setGlobalData(this, "Trans", binding.etNombreTransportista.text.toString())
             println("UPDATE TRANSPORTE= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
         }
-        if (checkboxPredio.isChecked.toString() != preferencias.getGlobalData(this, "UsoPredio")){
-            var predio = "0"
-            if(checkboxPredio.isChecked.toString() == "true"){
-                predio = "1"
-            }
-            //Update request
-            val update = Update("USAPREDIO", preferencias.getGlobalData(this, "UsoPredio"), predio,
-                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
-            utils.doRequest(update, this)
-            preferencias.setGlobalData(this, "UsoPredio", checkboxPredio.isChecked.toString())
-            println("UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
-        }
+//        if (checkboxPredio.isChecked.toString() != preferencias.getGlobalData(this, "UsoPredio")){
+//            var predio = "0"
+//            if(checkboxPredio.isChecked.toString() == "true"){
+//                predio = "1"
+//            }
+//            //Update request
+//            val update = Update("USAPREDIO", preferencias.getGlobalData(this, "UsoPredio"), predio,
+//                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+//            utils.doRequest(update, this)
+//            preferencias.setGlobalData(this, "UsoPredio", checkboxPredio.isChecked.toString())
+//            println("UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+//        }
         //ARMA
         if (binding.etNumArma.text.toString() != preferencias.getGlobalData(this, "Arma")){
             //Update request
@@ -585,15 +594,21 @@ class MisionActivity : AppCompatActivity() {
         } else {
             println("UNNN_OHAYOOOO: "+utils.tipoErrorString)
         }
-        if (selectedSpinnerInt != preferencias.getGlobalData(this, "au_Pais").toInt()){
+        var auPais = if(preferencias.getGlobalData(this, "au_Pais") == null) 0 else preferencias.getGlobalData(this, "au_Pais").toInt()
+        var pais = if(preferencias.getGlobalData(this, "Pais") == null) 0 else preferencias.getGlobalData(this, "au_Pais").toInt()
+        val valor = if (auPais == 7) 0 else pais
+
+        if (selectedSpinnerInt != valor){
+            val valor2 = if (selectedSpinnerInt == 0) "7" else selectedSpinnerInt.toString()
+
             //Update request
-            val update = Update("PAIS", preferencias.getGlobalData(this, "au_Pais"), selectedSpinnerInt.toString(),
+            val update = Update("PAIS", preferencias.getGlobalData(this, "au_Pais"), valor2,
                 utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
 
             utils.doRequest(update, this)
             println("1UPDATE Pais= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
             if(utils.infoUpdate!!.Success){
-                preferencias.updateGlobalData(this, "Pais", selectedSpinnerInt.toString())
+                preferencias.updateGlobalData(this, "Pais", valor2)
             }
         }
         if (binding.etTelTransportista.text.toString() != preferencias.getGlobalData(this, "au_TelTrans")){
@@ -618,21 +633,21 @@ class MisionActivity : AppCompatActivity() {
                 preferencias.updateGlobalData(this, "Trans", binding.etNombreTransportista.text.toString())
             }
         }
-        if (checkboxPredio.isChecked.toString() != preferencias.getGlobalData(this, "au_UsoPredio")){
-            var predio = "0"
-            if(checkboxPredio.isChecked.toString() == "true"){
-                predio = "1"
-            }
-            //Update request
-            val update = Update("USAPREDIO", preferencias.getGlobalData(this, "au_UsoPredio"), predio,
-                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
-
-            utils.doRequest(update, this)
-            println("1UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
-            if(utils.infoUpdate!!.Success){
-                preferencias.updateGlobalData(this, "Tel", checkboxPredio.isChecked.toString())
-            }
-        }
+//        if (checkboxPredio.isChecked.toString() != preferencias.getGlobalData(this, "au_UsoPredio")){
+//            var predio = "0"
+//            if(checkboxPredio.isChecked.toString() == "true"){
+//                predio = "1"
+//            }
+//            //Update request
+//            val update = Update("USAPREDIO", preferencias.getGlobalData(this, "au_UsoPredio"), predio,
+//                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+//
+//            utils.doRequest(update, this)
+//            println("1UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+//            if(utils.infoUpdate!!.Success){
+//                preferencias.updateGlobalData(this, "Tel", checkboxPredio.isChecked.toString())
+//            }
+//        }
         //ARMA
         if (binding.etNumArma.text.toString() != preferencias.getGlobalData(this, "au_Arma")){
             //Update request
@@ -716,7 +731,8 @@ class MisionActivity : AppCompatActivity() {
             binding.etNotas.text.toString(), preferencias.getGlobalData(this@MisionActivity, "Rui"), binding.etNombrePiloto.text.toString(),
             binding.etPlacaCabezal.text.toString(), sellado, binding.etTelefonoPiloto.text.toString(),
             preferencias.getGlobalData(this@MisionActivity, "TM"), binding.etTelTransportista.text.toString(),
-            binding.etNombreTransportista.text.toString(), if (checkboxPredio.isChecked) "1" else "0", /*selectedSpinnerInt.toString()*/)
+            binding.etNombreTransportista.text.toString(), "0", /*selectedSpinnerInt.toString()*/)
+        //if (checkboxPredio.isChecked) "1" else "0"
 
         //Establece los campos modificables como preferencias
         setPreferencias()

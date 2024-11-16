@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage"
@@ -43,6 +43,9 @@
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".FinalizarActivity"
+            android:exported="false" />
+        <activity
             android:name=".InicioScreen"
             android:exported="false" />
         <activity
@@ -72,8 +75,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".Utils.LocationService" android:foregroundServiceType="location"
-            tools:ignore="ForegroundServicePermission" android:exported="false" />
+
+        <service
+            android:name=".Utils.LocationService"
+            android:exported="false"
+            android:foregroundServiceType="location"
+            tools:ignore="ForegroundServicePermission" />
         <service
             android:name=".Utils.ExtraUtils"
             android:exported="false">
