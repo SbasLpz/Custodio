@@ -1,6 +1,14 @@
 package com.miapp.custodio2.Utils
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.media.RingtoneManager
+import android.os.Build
+import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.GsonBuilder
@@ -9,6 +17,8 @@ import com.miapp.custodio2.BotonesActivity
 import com.miapp.custodio2.ClasesRequest.APIService
 import com.miapp.custodio2.ClasesRequest.Registro
 import com.miapp.custodio2.ClasesRequest.RegistroRes
+import com.miapp.custodio2.PanelActivity
+import com.miapp.custodio2.R
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -32,7 +42,7 @@ class ExtraUtils: FirebaseMessagingService() {
 
         accion = message.data.get("action")
         if (accion == "ACTION_LOCATE_DEVICE"){
-            println("TENGO QUE ENVIAR LA UBICACIOOOON !!!!")
+            println("TENGO QUE ENVIAR LA UBICACIOOOON !!!! - onMessage")
 
             if (utils.isServiceRunning(this, LocationService::class.java)){
                 //println("77777777 SERVICIO CORRIENDO 77777777")
@@ -54,6 +64,10 @@ class ExtraUtils: FirebaseMessagingService() {
                 val dataMi = Registro("0","ACTION_LOCATE_DEVICE", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.extGetGlobalData(this@ExtraUtils, "TM"))
                 send(applicationContext, dataMi)
             }
+        } else if (accion == "robo"){
+            println("♦♦ ♠♠ ALERTA DE UNIDAD ROBADA ♠♠ ♦♦")
+            sendNotification(1, "urgent_channel", "Notificacion urgente", message.data.get("message"), message.data.get("url"))
+            println("♦♦ ♠♠ JOB DONE ♠♠ ♦♦")
         }
     }
 
@@ -89,6 +103,42 @@ class ExtraUtils: FirebaseMessagingService() {
             println("Consulta Hecha: "+jsonObjectString)
             //errorString = "ERROR-REGISTRO: "+response.code().toString()+" CONSULTA: "+jsonObjectString
         }
+    }
+
+    private fun sendNotification(notiId: Int, channelId: String, channelName: String, msg: String?, url: String?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH).apply {
+                description = "Notificación de COMSI-Custodio"
+                enableVibration(true)
+            }
+
+            val notiManager = getSystemService(NotificationManager::class.java)
+
+            notiManager.createNotificationChannel(channel)
+        }
+
+        val intent = Intent(this, PanelActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.putExtra("msg", msg)
+        intent.putExtra("url", url)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.logo_comsi) // Cambia por tu icono
+            .setContentTitle("Unidad Robada")
+            .setContentText("Presione esta notificación para ver detalles.")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setColor(Color.RED)
+            .setSound(soundUri)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.notify(notiId, notification)
     }
 
 }

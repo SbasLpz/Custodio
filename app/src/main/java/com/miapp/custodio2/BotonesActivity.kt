@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -225,11 +226,13 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             startService(this)
             println("KKK    Termine las ubicaciones SERVICE.    KKK")
         }
-//        GlobalScope.launch {
-//            val registro = Registro("0","Se CERRO la app !!", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
-//            //Aqui iba el mismo codigo de sendButtonData()
-//            utils.doRequest(registro, this@BotonesActivity)
-//        }
+
+        GlobalScope.launch {
+            val registro = Registro("0","Cerro la APP el usuario", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+            //Aqui iba el mismo codigo de sendButtonData()
+            utils.doRequest(registro, this@BotonesActivity)
+        }
+
         var tipo = 0
         var acc = "Se CERRO la app !!"
         var date = utils.getCurrentDate()
@@ -287,7 +290,8 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
     }
 
     //Maneja los click a los botonoes
-    override fun onItemClick(position: Int, name: String) {
+    override fun onItemClick(position: Int, name: String, id: Int) {
+        println("/// --- /// --- / ID: ${utils.infoBotones!!.Data[position].Id}")
         utils.progressDialog = ProgressDialog(this)
         utils.progressDialog!!.theme = ProgressDialog.THEME_LIGHT
         utils.progressDialog!!.mode = ProgressDialog.MODE_INDETERMINATE
@@ -304,6 +308,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                     if(name == "Pánico" || name == "Desperfectos" || name == "Puesto de Registro" || name == "Unidad Accidentada"){
                         tipoEvento = "2"
                     }
+
                     //Ya se tiene la UBICACION
                     val registro = Registro(tipoEvento, name, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@BotonesActivity, "TM"))
 
@@ -380,6 +385,10 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                     cerrarAlert("Puesto de Registro")
                     responseRequest(name)
                 }
+                "Finalizar" -> {
+                    /** Abrir nueva actividad **/
+                    startActivity(Intent(this@BotonesActivity, FinalizarActivity::class.java))
+                }
                 else ->{
                     utils.doRequest(registro, this@BotonesActivity)
                     responseRequest(name)
@@ -418,6 +427,26 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             super.onAvailable(network)
             binding.version.setTextColor(Color.DKGRAY)
         }
+    }
+
+
+    private fun showInputDialog() {
+        var input = EditText(this).apply {
+            hint = "Ingrese el número"
+        }
+
+        MaterialAlertDialogBuilder(this@BotonesActivity)
+            .setTitle("Número finalización")
+            .setView(input)
+            .setMessage("Este es el código de finalización de su misión asgnada.")
+            .setPositiveButton("Dar permiso") { dialog, which ->
+                // Respond to neutral button press
+                utils.openAppNotificationSettings(this)
+            }
+            .setNegativeButton("Salir") { dialog, which ->
+
+            }
+            .show()
     }
 
     override fun updateTextView() {

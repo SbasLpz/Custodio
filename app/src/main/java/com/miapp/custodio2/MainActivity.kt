@@ -232,7 +232,15 @@ class MainActivity : AppCompatActivity() {
         preferencias.setGlobalData(this@MainActivity, "au_Piloto", utils.infoAutenticar!!.Piloto)
         preferencias.setGlobalData(this, "au_Arma", utils.infoAutenticar!!.Escopeta)
         //Editables
-        preferencias.setGlobalData(this, "au_Pais", "7"/*utils.infoAutenticar!!.Pais*/)
+
+        /** CAMPOS QUE AUN NO VIENEN EN EL /AUTENTICAR PERO TIENE QUE VENIR MÁS ADLEANTRE **/
+        preferencias.setGlobalData(this, "au_Pais", "0"/*utils.infoAutenticar!!.Pais*/)
+        preferencias.setGlobalData(this, "au_HoraPos", "Sin definir"/*utils.infoAutenticar!!.HoraPos*/)
+        preferencias.setGlobalData(this, "au_HoraSol", "Sin definir"/*utils.infoAutenticar!!.HoraPos*/)
+        preferencias.setGlobalData(this, "au_Lugar", "Sin definir"/*utils.infoAutenticar!!.HoraPos*/)
+        preferencias.setGlobalData(this, "au_HoraSalida", "Sin definir"/*utils.infoAutenticar!!.HoraPos*/)
+
+
         preferencias.setGlobalData(this, "au_Tel", utils.infoAutenticar!!.TelefonoPiloto)
         preferencias.setGlobalData(this, "au_Sellado", utils.infoAutenticar!!.Sellado)
         preferencias.setGlobalData(this, "au_Fiscal", utils.infoAutenticar!!.MarchamoFiscal)
@@ -426,6 +434,7 @@ class MainActivity : AppCompatActivity() {
             show()
         }
     }
+
 
 
     //Solicita la ubicacion de este momento, en raros casos es null

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FinalizarActivity">
+
+    <View
+        android:id="@+id/vwMarco"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/bg_color" />
+
+    <TextView
+        android:id="@+id/tvNombreCustodio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Nombre Apellido"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:fontFamily="@font/robotomedium"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeStepGranularity="2sp"
+        android:gravity="center"
+        app:layout_constraintStart_toEndOf="@id/ivLogoComsi"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+        app:layout_constraintEnd_toStartOf="@id/ivUserPhotoApp"
+        />
+
+    <ImageView
+        android:id="@+id/ivUserPhotoApp"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/usuario"
+        android:layout_marginEnd="@dimen/margin_15dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/vwMarco"
+        />
+
+    <ImageView
+        android:id="@+id/ivLogoComsi"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/logo_comsi"
+        android:layout_marginLeft="@dimen/margin_15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivUserPhotoApp"
+        app:layout_constraintBottom_toBottomOf="@id/ivUserPhotoApp"
+        />
+
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fomrulario de finalización"
+        android:textColor="@color/black"
+        android:layout_marginTop="150dp"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
+
+    <TextView
+        android:id="@+id/tvNumeroFinalización"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Número de finalización: "
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/margin_10dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        />
+
+    <EditText
+        android:id="@+id/etNumeroFinalización"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/et_border_mision_style"
+        android:backgroundTint="@color/divisor_line_color"
+        android:enabled="true"
+        android:inputType="text"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@id/tvTitle"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvNumeroFinalización"
+        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnVerfificar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/rojo_basico1"
+        app:layout_constraintTop_toBottomOf="@id/etNumeroFinalización"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        android:text="Verificar"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:visibility="gone"
+        android:textColor="@color/rojo_basico1"
+        android:layout_marginTop="@dimen/margin_10dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/checkboxTrifoliar"
+        />
+
+    <CheckBox
+        android:id="@+id/checkboxUsoPredio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="Uso de predio"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/btnVerfificar"
+        tools:ignore="MissingConstraints" />
+
+    <CheckBox
+        android:id="@+id/checkboxTrifoliar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="Envío de trifoliar"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/checkboxUsoPredio"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnFinalizar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:visibility="gone"
+        android:backgroundTint="@color/rojo_basico1"
+        app:layout_constraintTop_toBottomOf="@id/checkboxTrifoliar"
+        android:text="Finalizar"
+        android:textColor="@color/white" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

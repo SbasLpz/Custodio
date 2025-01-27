@@ -15,6 +15,9 @@ class PanelActivity : AppCompatActivity() {
     val preferencias = Preferencias()
     val preferenciasFbResponse = ExtraUtils()
 
+    val msg = intent.getStringExtra("msg")
+    val url = intent.getStringExtra("url")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPanelBinding.inflate(layoutInflater)
@@ -22,8 +25,8 @@ class PanelActivity : AppCompatActivity() {
 
         var mensaje = preferenciasFbResponse
 
-        binding.tvInfo.setText(preferencias.getGlobalData(this, "mPanel"))
-        var url = preferencias.getGlobalData(this, "urlPanel")
+        binding.tvInfo.setText(msg)
+        //var url = preferencias.getGlobalData(this, "urlPanel")
         Glide.with(this).load(url).into(binding.ivUrl)
 
         binding.btnCerrar.setOnClickListener {
@@ -31,7 +34,7 @@ class PanelActivity : AppCompatActivity() {
             preferencias.updateGlobalData(this, "mPanel", "")
             preferencias.updateGlobalData(this, "urlPanel", "")
             startActivity(Intent(this, BotonesActivity::class.java))
-            this.finishAffinity()
+            this.finish()
         }
     }
 
