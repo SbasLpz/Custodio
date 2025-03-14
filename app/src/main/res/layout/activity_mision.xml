@@ -157,7 +157,7 @@
             android:id="@+id/tvPlacaCabezal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Placa del cabezal: "
+            android:text="Placa cabezal: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_15dp"
             android:textSize="16sp"
@@ -214,7 +214,7 @@
             android:id="@+id/tvPlacaTC"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Placa de TC: "
+            android:text="Placa TC: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -242,7 +242,7 @@
             android:id="@+id/tvNumContenedor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Número contenedor: "
+            android:text="Contenedor: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -270,7 +270,7 @@
             android:id="@+id/tvNombrePiloto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nombre del piloto"
+            android:text="Nombre piloto"
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -346,7 +346,7 @@
             android:id="@+id/tvPais"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="País: "
+            android:text="País transporte: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -366,7 +366,7 @@
             android:id="@+id/tvNombreTransportista"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nombre del transportista: "
+            android:text="Nombre transporte: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -396,7 +396,7 @@
             android:id="@+id/tvTelTransportista"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Teléfono del transportista: "
+            android:text="Teléfono transporte: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -416,9 +416,10 @@
             android:scrollHorizontally="true"
             android:textColor="@color/black"
             android:textSize="15sp"
+            android:layout_marginStart="5dp"
             app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@id/tvTelTransportista"
+            app:layout_constraintStart_toEndOf="@id/spinnerCountry1"
             app:layout_constraintTop_toBottomOf="@id/tvTelTransportista"
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
@@ -436,7 +437,7 @@
             android:id="@+id/tvTelefonoPiloto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Télefono del piloto: "
+            android:text="Télefono piloto: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -456,9 +457,10 @@
             android:scrollHorizontally="true"
             android:textColor="@color/black"
             android:textSize="15sp"
+            android:layout_marginStart="5dp"
             app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@id/tvTelefonoPiloto"
+            app:layout_constraintStart_toEndOf="@id/spinnerCountry2"
             app:layout_constraintTop_toBottomOf="@id/tvTelefonoPiloto"
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
@@ -524,35 +526,6 @@
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
         <TextView
-            android:id="@+id/tvHoraPos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hora del posicionamiento: "
-            android:textColor="@color/black"
-            android:layout_marginTop="@dimen/margin_10dp"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
-            app:layout_constraintTop_toBottomOf="@id/etMarchamoFiscal"
-            />
-        <EditText
-            android:id="@+id/etHoraPos"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/et_border_mision_style"
-            android:backgroundTint="@color/divisor_line_color"
-            android:enabled="false"
-            android:inputType="text"
-            android:maxLines="1"
-            android:scrollHorizontally="true"
-            android:textColor="@color/black"
-            android:textSize="15sp"
-            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@id/tvNombreTransportista"
-            app:layout_constraintTop_toBottomOf="@id/tvHoraPos"
-            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
-
-        <TextView
             android:id="@+id/tvHoraSolicitada"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -561,7 +534,7 @@
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
-            app:layout_constraintTop_toBottomOf="@id/etHoraPos"
+            app:layout_constraintTop_toBottomOf="@id/etMarchamoFiscal"
             />
         <EditText
             android:id="@+id/etHoraSolicitada"
@@ -582,6 +555,115 @@
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
         <TextView
+            android:id="@+id/tvHoraPos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hora posicionamiento: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
+            app:layout_constraintTop_toBottomOf="@id/etHoraSolicitada"
+            />
+
+        <EditText
+            android:id="@+id/etHoraPos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:inputType="text"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:enabled="false"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/tvNombreTransportista"
+            app:layout_constraintTop_toBottomOf="@id/tvHoraPos"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvHoraSalida"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hora salida: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
+            app:layout_constraintTop_toBottomOf="@id/etHoraPos"
+            />
+        <EditText
+            android:id="@+id/etHoraSalida"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:enabled="false"
+            android:inputType="text"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/tvNombreTransportista"
+            app:layout_constraintTop_toBottomOf="@id/tvHoraSalida"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/tvHoraContacto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hora contacto: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
+            app:layout_constraintTop_toBottomOf="@id/etHoraSalida"
+            />
+
+        <Button
+            android:id="@+id/etHoraContacto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/divisor_line_color"
+            android:text="Seleccionar hora"
+            app:layout_constraintStart_toStartOf="@id/tvHoraContacto"
+            app:layout_constraintTop_toBottomOf="@id/tvHoraContacto"/>
+
+        <TextView
+            android:id="@+id/tvLugarSalida"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lugar de salida: "
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
+            app:layout_constraintTop_toBottomOf="@id/etHoraContacto"
+            />
+        <EditText
+            android:id="@+id/etLugarSalida"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            android:enabled="false"
+            android:inputType="text"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/tvNombreTransportista"
+            app:layout_constraintTop_toBottomOf="@id/tvLugarSalida"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+        <TextView
             android:id="@+id/tvLugarPos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -590,7 +672,7 @@
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
-            app:layout_constraintTop_toBottomOf="@id/etHoraSolicitada"
+            app:layout_constraintTop_toBottomOf="@id/etLugarSalida"
             />
         <EditText
             android:id="@+id/etLugarPos"
@@ -638,7 +720,7 @@
             android:id="@+id/tvNumArma"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Número del arma: "
+            android:text="Número arma: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -762,6 +844,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             />
+
+        <Spinner
+            android:id="@+id/spinnerCountry1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/codsPais"
+            android:background="@drawable/border_spinner"
+            app:layout_constraintStart_toStartOf="@id/tvPais"
+            app:layout_constraintTop_toBottomOf="@id/tvTelTransportista"/>
+
+        <Spinner
+            android:id="@+id/spinnerCountry2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/codsPais"
+            android:background="@drawable/border_spinner"
+            app:layout_constraintStart_toStartOf="@id/tvPais"
+            app:layout_constraintTop_toBottomOf="@id/tvTelefonoPiloto"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

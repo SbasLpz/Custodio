@@ -225,6 +225,8 @@ class MainActivity : AppCompatActivity() {
         preferencias.setGlobalData(this@MainActivity, "NombreCustodio", utils.infoAutenticar!!.NombreCustodio)
         //NOMB
         preferencias.setGlobalData(this, "Nomb", utils.infoAutenticar!!.Nombramiento)
+        //Código finalización
+        preferencias.setGlobalData(this, "Codigo", utils.infoAutenticar!!.Codigo.toString())
         //Datos para Mision
         preferencias.setGlobalData(this@MainActivity, "au_Cabezal", utils.infoAutenticar!!.Placa)
         preferencias.setGlobalData(this@MainActivity, "au_Tc", utils.infoAutenticar!!.PlacaTC)
@@ -235,9 +237,18 @@ class MainActivity : AppCompatActivity() {
 
         /** CAMPOS QUE AUN NO VIENEN EN EL /AUTENTICAR PERO TIENE QUE VENIR MÁS ADLEANTRE **/
         preferencias.setGlobalData(this, "au_Pais", "0"/*utils.infoAutenticar!!.Pais*/)
-        preferencias.setGlobalData(this, "au_HoraPos", "Sin definir"/*utils.infoAutenticar!!.HoraPos*/)
-        preferencias.setGlobalData(this, "au_HoraSol", "Sin definir"/*utils.infoAutenticar!!.HoraPos*/)
-        preferencias.setGlobalData(this, "au_Lugar", "Sin definir"/*utils.infoAutenticar!!.HoraPos*/)
+        preferencias.setGlobalData(this, "au_HoraPos", utils.infoAutenticar!!.FechaPosicionamiento)
+        preferencias.setGlobalData(this, "au_HoraSol", utils.infoAutenticar!!.FechaSolicitada)
+        preferencias.setGlobalData(this, "au_Lugar", utils.infoAutenticar!!.LugarInicio)
+        preferencias.setGlobalData(this, "au_LugarSalida", utils.infoAutenticar!!.LugarSalida)
+        preferencias.setGlobalData(this, "au_HoraContacto", utils.infoAutenticar!!.FechaContacto)
+
+        if(utils.infoAutenticar!!.FechaContacto == "") {
+            preferencias.setGlobalData(this, "au_HoraContacto", "Sin definir")
+        }
+
+        preferencias.setGlobalData(this, "au_HoraSalida", utils.infoAutenticar!!.FechaSalida)
+
 
 
         preferencias.setGlobalData(this, "au_Tel", utils.infoAutenticar!!.TelefonoPiloto)
@@ -355,6 +366,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                     this@MainActivity.finish()
                 } else {
+                    preferencias.setGlobalData(this@MainActivity, "TM", utils.infoAutenticar!!.Token)
                     utils.progressDialog!!.dismiss()
                     Toast.makeText(this@MainActivity, "Mision no asignada", Toast.LENGTH_SHORT).show()
                     binding.btnIngresar.isEnabled = true
@@ -433,6 +445,7 @@ class MainActivity : AppCompatActivity() {
             show()
         }
     }
+
 
 
     //Solicita la ubicacion de este momento, en raros casos es null

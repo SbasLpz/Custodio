@@ -29,8 +29,10 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
+import com.miapp.custodio2.BotonesActivity
 import com.miapp.custodio2.ClasesRequest.*
 import com.techiness.progressdialoglibrary.ProgressDialog
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -69,6 +71,8 @@ class RequestPermissions() {
     var coordenadas = arrayOf("", "")
     var received = 0
 
+    val preferencias = Preferencias()
+
     //C2DM - TOKEN DEVICE
     var tokenDevice = "solo"
 
@@ -85,6 +89,7 @@ class RequestPermissions() {
     var infoRegistro: RegistroRes? = null
     var infoCheck: CheckRes? = null
     var infoFinalizar:FinalizarRes? = null
+    var infoExtraccion:ExtraccionRes? = null
     var infoCheckFinalizar:CheckFinalizarRes? = null
 
     //Foto del marchamo fiscal
@@ -104,6 +109,7 @@ class RequestPermissions() {
 
     var lat0 = ""
     var long0 = ""
+
 
     //PERMISOS
     //act: Activity, permisos: Array<String>, code: Int
@@ -539,7 +545,7 @@ class RequestPermissions() {
             is Envio -> getDireccion(datos, act)
             is Registro -> registro(datos, act)
             is Check -> checkMision(datos, act)
-
+            is Extraccion -> extraccion(datos, act)
             is Finalizar -> finalizar(datos, act)
             else -> println("ELSE WHEN")
         }
@@ -608,6 +614,7 @@ class RequestPermissions() {
             val jsonObject = JSONObject()
 
             jsonObject.put("Escopeta", datos.Escopeta)
+            //jsonObject.put("HoraContacto", datos.HoraContacto)
             jsonObject.put("Marchamo", datos.Marchamo)
             jsonObject.put("MarchamoFiscal", datos.MarchamoFiscal)
             jsonObject.put("MarchamoGPS", datos.MarchamoGPS)
@@ -641,6 +648,7 @@ class RequestPermissions() {
                 println("ERROR-Mision: "+response.code().toString())
                 println("Consulta Hecha: "+jsonObjectString)
                 infoMision = null
+                ApiErrorHandler.createError(response.code().toString(), "Error de conexón con la API de SICCAP.", "En caso de persisitir el probelma notifique.")
             }
         } catch (e: UnknownHostException){
             println("Mis/ Error de resolución de host: ${e.message}")
@@ -853,6 +861,8 @@ class RequestPermissions() {
                 println("Consulta Botones: "+jsonObjectString)
                 println("EXITO-GET BOTONES, json="+prettyJson)
                 infoBotones = readResult
+
+                preferencias.setGlobalData(act, "btns", Gson().toJson(infoBotones))
             } else {
                 println("ERROR-GET BOTONES: "+response.code().toString())
                 println("Consulta Hecha: "+jsonObjectString)
@@ -1236,6 +1246,65 @@ class RequestPermissions() {
                 locationCallback,
                 Looper.getMainLooper()
             )
+        }
+    }
+
+    suspend fun extraccion(datos: Extraccion, act: Activity){
+        try {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(act.getString(com.miapp.custodio2.R.string.UrlBase))
+                .build()
+            val service = retrofit.create(APIService::class.java)
+            val jsonObject = JSONObject()
+
+            jsonObject.put("Latitud", datos.Latitud)
+            jsonObject.put("Longitud", datos.Longitud)
+            jsonObject.put("Reconcentrar", datos.Reconcentrar)
+            jsonObject.put("Token", datos.Token)
+
+            val jsonObjectString = jsonObject.toString()
+            val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+
+            val response = service.endExtraccion(requestBody)
+            if (response.isSuccessful) {
+                //Obtiene la respuesta del request y la pasa a JSON
+                val gson = GsonBuilder().setPrettyPrinting().create()
+                val prettyJson = gson.toJson(JsonParser.parseString(response.body()?.string()))
+                //El JSON lo pasas a objeto tipo Autenticar (readREsult)
+                val gson2 = GsonBuilder().setPrettyPrinting().create()
+                val readResult:ExtraccionRes = gson2.fromJson(prettyJson, ExtraccionRes::class.java)
+
+                println("Datos Enviados a EXTRACCION: "+jsonObjectString)
+                println("EXITO-EXTRACCION, json="+prettyJson)
+                infoExtraccion = readResult
+            } else {
+                println("ERROR-EXTRACCION: "+response.code().toString())
+                println("Consulta Hecha EXTRACCION: "+jsonObjectString)
+                infoExtraccion = null
+            }
+        } catch (e: UnknownHostException){
+            println("Finalizar/ Error de resolución de host: ${e.message}")
+            tipoErrorString = "Finalizar/1"
+
+            MaterialAlertDialogBuilder(act)
+                .setTitle("Error de conexion con Comsi SICCAP ")
+                .setMessage("Error ${e.localizedMessage}: ${e.message} \n\nProblemas con conexion a Comsi SICCAP, compruebe estar con conexión sino itente mas tarde")
+                .setNeutralButton("Aceptar") { dialog, which ->
+                    // Respond to neutral button press
+                    return@setNeutralButton
+                }
+                .show()
+
+            Toast.makeText(act, "Finalizar/ Error comunicación con host, verfique que tenga conexión a Internet", Toast.LENGTH_LONG).show()
+            errorString = "Finalizar/ Error de resolución de host: ${e.message}"
+            return
+        } catch (e: SocketTimeoutException) {
+            println("Finalizar/ Error de tiempo de espera de conexión: ${e.message}")
+            tipoErrorString = "Finalizar/2"
+            Toast.makeText(act, "Mis/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+            errorString = "Finalizar/ Error de tiempo de espera de conexión: ${e.message}"
+        } catch (e: Exception) {
+            Toast.makeText(act, "Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
         }
     }
 

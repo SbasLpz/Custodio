@@ -20,6 +20,21 @@ class PerfilActivity : AppCompatActivity() {
 
         Linkify.addLinks(binding.txtPoliticas, Linkify.ALL)
 
+        var d1 = preferencias.getGlobalData(this, "PrimerUso")
+        var d2 = preferencias.getGlobalData(this, "UltimoUso")
+        var d3 = preferencias.getGlobalData(this, "TotalServiciosApp")
+        var d4 = preferencias.getGlobalData(this, "TotalServiciosMes")
+
+        println("D1: "+d1)
+        println("D2: "+d1)
+        println("D3: "+d1)
+        println("D4: "+d4)
+
+        binding.tvInfoPrimerUso.setText(d1)
+        binding.tvInfoUltimoUso.setText(d2)
+        binding.tvInfoTotalUsos.setText(d3)
+        binding.tvInfoTotalUsosMes.setText(d4)
+
         binding.btnCerrarSesion.setOnClickListener {
             Intent(applicationContext, LocationService::class.java).apply {
                 action = LocationService.SERVICE_STOP

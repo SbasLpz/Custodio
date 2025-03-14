@@ -1,4 +1,4 @@
-package com.miapp.custodio2.Adapters
+package com.miapp.custodio2.ClasesRequest.Adapters
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -18,6 +18,7 @@ class Adapter(private val dataList: List<CardViewData>, private val listener: On
         val nameView: TextView = itemView.findViewById(R.id.button_name)
         val bc: RelativeLayout = itemView.findViewById(R.id.bc_icon)
 
+
         init {
             itemView.setOnClickListener(this)
         }
@@ -25,15 +26,16 @@ class Adapter(private val dataList: List<CardViewData>, private val listener: On
         override fun onClick(v: View?) {
             val position:Int = adapterPosition
             val name:String = nameView.text.toString()
+            //val id:Int = -1
 
             if (position != RecyclerView.NO_POSITION) {
-                listener.onItemClick(position, name)
+                listener.onItemClick(position, name, dataList[position].id)
             }
         }
     }
 
     interface OnItemClickListener{
-        fun onItemClick(position: Int, name: String)
+        fun onItemClick(position: Int, name: String, id: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

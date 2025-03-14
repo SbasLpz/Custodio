@@ -1,6 +1,7 @@
 package com.miapp.custodio2
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -25,9 +27,10 @@ import androidx.work.workDataOf
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.miapp.custodio2.Adapters.Adapter
-import com.miapp.custodio2.Adapters.CardViewData
+import com.miapp.custodio2.ClasesRequest.Adapters.Adapter
+import com.miapp.custodio2.ClasesRequest.Adapters.CardViewData
 import com.miapp.custodio2.ClasesRequest.*
 import com.miapp.custodio2.Utils.Checker
 import com.miapp.custodio2.Utils.LocationService
@@ -70,6 +73,8 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
         ActivityHolder.botonesActivity = this
 
         preferencias.setGlobalData(this, "verM", "false")
+
+        preferencias.setGlobalData(this, "FinalEnviado", "false")
 
         binding.tvMisionRui.text = "RUI: "+preferencias.getGlobalData(this, "Rui")
         binding.tvMisionNomb.text = "NOMB: "+preferencias.getGlobalData(this, "Nomb")
@@ -225,11 +230,13 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             startService(this)
             println("KKK    Termine las ubicaciones SERVICE.    KKK")
         }
-//        GlobalScope.launch {
-//            val registro = Registro("0","Se CERRO la app !!", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
-//            //Aqui iba el mismo codigo de sendButtonData()
-//            utils.doRequest(registro, this@BotonesActivity)
-//        }
+
+        GlobalScope.launch {
+            val registro = Registro("0","Cerro la APP el usuario", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+            //Aqui iba el mismo codigo de sendButtonData()
+            utils.doRequest(registro, this@BotonesActivity)
+        }
+
         var tipo = 0
         var acc = "Se CERRO la app !!"
         var date = utils.getCurrentDate()
@@ -287,7 +294,16 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
     }
 
     //Maneja los click a los botonoes
-    override fun onItemClick(position: Int, name: String) {
+    override fun onItemClick(position: Int, name: String, id: Int) {
+        val btns = preferencias.getGlobalData(this, "btns")
+        //utils.infoBotones = if (Gson().fromJson(btns, BotonesRes::class.java) != null) Gson().fromJson(btns, BotonesRes::class.java) else null
+        utils.infoBotones = if (Gson().fromJson(btns, BotonesRes::class.java) != null) Gson().fromJson(btns, BotonesRes::class.java) else utils.infoBotones
+
+        if (utils.infoBotones == null) {
+            Toast.makeText(this, "No se pudo Enviar el comando, recargue la pantalla de botones.", Toast.LENGTH_LONG).show()
+            return
+        }
+        println("/// --- /// --- / ID: ${utils.infoBotones!!.Data[position].Id}")
         utils.progressDialog = ProgressDialog(this)
         utils.progressDialog!!.theme = ProgressDialog.THEME_LIGHT
         utils.progressDialog!!.mode = ProgressDialog.MODE_INDETERMINATE
@@ -304,6 +320,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                     if(name == "Pánico" || name == "Desperfectos" || name == "Puesto de Registro" || name == "Unidad Accidentada"){
                         tipoEvento = "2"
                     }
+
                     //Ya se tiene la UBICACION
                     val registro = Registro(tipoEvento, name, utils.getCurrentDate(), utils.latitude, utils.longitude, preferencias.getGlobalData(this@BotonesActivity, "TM"))
 
@@ -382,7 +399,8 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                 }
                 "Finalizar" -> {
                     /** Abrir nueva actividad **/
-                    startActivity(Intent(this@BotonesActivity, FinalizarActivity::class.java))
+                    //startActivity(Intent(this@BotonesActivity, FinalizarActivity::class.java))
+                    mostrarDialogoConValidacion(this@BotonesActivity, registro, name)
                 }
                 else ->{
                     utils.doRequest(registro, this@BotonesActivity)
@@ -424,12 +442,82 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
         }
     }
 
+
+    private fun showInputDialog() {
+        var input = EditText(this).apply {
+            hint = "Ingrese el número"
+        }
+
+        MaterialAlertDialogBuilder(this@BotonesActivity)
+            .setTitle("Número finalización")
+            .setView(input)
+            .setMessage("Este es el código de finalización de su misión asgnada.")
+            .setPositiveButton("Dar permiso") { dialog, which ->
+                // Respond to neutral button press
+                utils.openAppNotificationSettings(this)
+            }
+            .setNegativeButton("Salir") { dialog, which ->
+
+            }
+            .show()
+    }
+
     override fun updateTextView() {
         println("huh")
     }
 
     override fun getTxtVersion(): TextView {
         return binding.version
+    }
+
+    fun mostrarDialogoConValidacion(context: Context, registro: Registro, name:String) {
+        val editText = EditText(context).apply {
+            hint = "Ingrese un el numero "
+        }
+
+        var messageText = "Ingrese el código asigando"
+
+        if(preferencias.getGlobalData(this, "FinalEnviado") == "true"){
+            utils.progressDialog!!.dismiss()
+            Toast.makeText(this, "Código de finalización ya ha sido Enviado", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val dialog = AlertDialog.Builder(context)
+            .setTitle("Ingrese el Cdógio de Finalización")
+            .setMessage("Ingrese el código asigando")
+            .setView(editText)
+            .setPositiveButton("Aceptar", null) // Se asigna después para evitar cierre automático
+            .setNegativeButton("Salir") { dialog, _ ->
+                dialog.dismiss()
+                utils.progressDialog!!.dismiss()
+            }
+            .create()
+
+        dialog.setOnShowListener {
+            val botonAceptar = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            botonAceptar.setOnClickListener {
+                val inputCod = editText.text.toString().toInt()
+                if (inputCod != preferencias.getGlobalData(this, "Codigo").toInt()) {
+                    //editText.error = "Este campo no puede estar vacío"
+                    dialog.setMessage("Número de finalizacón incorrecto")
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        //Toast.makeText(context, "Dato ingresado: $inputCod", Toast.LENGTH_SHORT).show()
+                        dialog.setMessage("Finalización enviado con exito !")
+
+                        registro.Accion.plus(" (${inputCod})")
+                        utils.doRequest(registro, this@BotonesActivity)
+                        responseRequest(name)
+                        preferencias.setGlobalData(this@BotonesActivity, "FinalEnviado", "true")
+                        //dialog.dismiss()
+                    }
+                    // Validación correcta, procesar el dato y cerrar el diálogo
+                }
+            }
+        }
+
+        dialog.show()
     }
 
 }
