@@ -16,4 +16,7 @@
     <color name="suave_black_1">#383838</color>
     <color name="et_background_color">#313131</color>
     <color name="btn_yellow">#FDAC1F</color>
+
+    <color name="green">#55AA58</color>
+    <color name="orange">#CF613E</color>
 </resources>

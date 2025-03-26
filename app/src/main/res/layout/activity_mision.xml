@@ -174,22 +174,23 @@
             android:enabled="false"
             android:textColor="@color/black"
             android:textSize="15sp"
-            app:layout_constraintEnd_toStartOf="@id/ivMarchamoFiscalFoto"
+            app:layout_constraintEnd_toStartOf="@id/ivFotoCabezal"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@id/tvPlacaCabezal"
             app:layout_constraintTop_toBottomOf="@id/tvPlacaCabezal"
-            app:layout_constraintBottom_toTopOf="@id/tvFotoCabezal"
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
-        <TextView
-            android:id="@+id/tvFotoCabezal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Foto del cabezal: "
-            android:textColor="@color/black"
-            android:layout_marginTop="@dimen/margin_10dp"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
-            app:layout_constraintTop_toBottomOf="@id/etPlacaCabezal"
-            />
+
+<!--        <TextView-->
+<!--            android:id="@+id/tvFotoCabezal"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="30dp"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="16sp"-->
+<!--            app:layout_constraintStart_toEndOf="@id/etPlacaCabezal"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"-->
+<!--            />-->
 
 <!--        <ImageView-->
 <!--            android:id="@+id/ivFotoCabezal"-->
@@ -206,8 +207,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_photo_camera"
-            app:layout_constraintStart_toEndOf="@id/tvFotoCabezal"
-            app:layout_constraintTop_toTopOf="@id/tvFotoCabezal"
+            android:layout_marginEnd="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"
+            app:layout_constraintBottom_toBottomOf="@id/etPlacaCabezal"
             tools:layout_editor_absoluteX="362dp" />
 
         <TextView
@@ -219,7 +222,7 @@
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
-            app:layout_constraintTop_toBottomOf="@id/tvFotoCabezal"
+            app:layout_constraintTop_toBottomOf="@id/ivFotoCabezal"
             />
 
         <EditText
@@ -638,7 +641,7 @@
             android:id="@+id/tvLugarSalida"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lugar de salida: "
+            android:text="Dirección de origen: "
             android:textColor="@color/black"
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
@@ -664,35 +667,29 @@
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
         <TextView
-            android:id="@+id/tvLugarPos"
+            android:id="@+id/tvDireccion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lugar de posicionamiento: "
+            android:text="Dirección de destino:"
             android:textColor="@color/black"
-            android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
+            android:layout_marginTop="@dimen/margin_10dp"
             app:layout_constraintTop_toBottomOf="@id/etLugarSalida"
+            app:layout_constraintStart_toStartOf="@id/tvMarchamoGps"
             />
-        <EditText
-            android:id="@+id/etLugarPos"
+
+        <TextView
+            android:id="@+id/tvMostrarDireccion"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/et_border_mision_style"
-            android:backgroundTint="@color/divisor_line_color"
-            android:enabled="false"
-            android:inputType="text"
-            android:maxLines="1"
-            android:scrollHorizontally="true"
+            android:text="Dirección de destino"
             android:textColor="@color/black"
-            android:textSize="15sp"
-            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@id/tvNombreTransportista"
-            app:layout_constraintTop_toBottomOf="@id/tvLugarPos"
-            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
-
-
+            android:textSize="14sp"
+            android:layout_marginTop="@dimen/margin_10dp"
+            app:layout_constraintTop_toBottomOf="@id/tvDireccion"
+            app:layout_constraintStart_toStartOf="@id/etMarchamoFiscal"
+            app:layout_constraintEnd_toEndOf="@id/etMarchamoFiscal"
+            />
 
         <TextView
             android:id="@+id/tvDatosEquipamiento"
@@ -704,7 +701,7 @@
             android:textColor="@color/act_mision_text"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@id/tvMarchamoFiscal"
-            app:layout_constraintTop_toBottomOf="@id/etLugarPos" />
+            app:layout_constraintTop_toBottomOf="@id/tvMostrarDireccion" />
 
         <View
             android:id="@+id/dv3"
@@ -770,30 +767,6 @@
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
         <TextView
-            android:id="@+id/tvDireccion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dirección de entrega:"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:layout_marginTop="@dimen/margin_10dp"
-            app:layout_constraintTop_toBottomOf="@id/etMarchamoGps"
-            app:layout_constraintStart_toStartOf="@id/tvMarchamoGps"
-            />
-
-        <TextView
-            android:id="@+id/tvMostrarDireccion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dirección de entraga"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:layout_marginTop="@dimen/margin_10dp"
-            app:layout_constraintTop_toBottomOf="@id/tvDireccion"
-            app:layout_constraintStart_toStartOf="@id/tvMarchamoGps"
-            />
-
-        <TextView
             android:id="@+id/tvNotas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -804,7 +777,7 @@
             android:layout_marginStart="@dimen/margin_subTxt_mision_start"
             android:layout_marginTop="@dimen/margin_subTxt_mision_top"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvMostrarDireccion"
+            app:layout_constraintTop_toBottomOf="@id/etMarchamoGps"
             />
 
         <EditText

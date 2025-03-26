@@ -21,6 +21,11 @@ class Preferencias() {
         var preferences = act.getSharedPreferences("GLOBAL", Context.MODE_PRIVATE)
         return preferences.getString(key, "null").toString()
     }
+
+    fun getGlobalDataWithContext(context:Context, key: String): String{
+        var preferences = context.getSharedPreferences("GLOBAL", Context.MODE_PRIVATE)
+        return preferences.getString(key, "null").toString()
+    }
     fun updateGlobalData(act: Activity, key: String, newValue: String){
         val sharedPreference =  act.getSharedPreferences("GLOBAL", Context.MODE_PRIVATE)
         var editor = sharedPreference.edit()

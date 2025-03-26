@@ -1,11 +1,20 @@
 package com.miapp.custodio2.Utils
 
 import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.google.android.gms.location.LocationServices
 import com.miapp.custodio2.BotonesActivity
 import com.miapp.custodio2.ClasesRequest.Registro
@@ -19,6 +28,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.runBlocking
+import okhttp3.internal.notify
 
 class LocationService: Service() {
 
@@ -30,13 +40,22 @@ class LocationService: Service() {
     var lata = "ssssss"
 
     val botonesActivity = BotonesActivity.ActivityHolder.botonesActivity
-
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
     override fun onCreate() {
         super.onCreate()
+//        if (Build.VERSION.SDK_INT > 30){
+//            val filter = IntentFilter().apply {
+//                addAction(Intent.ACTION_SHUTDOWN)
+//                addAction(Intent.ACTION_REBOOT)
+//                addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+//            }
+//
+//            //registerReceiver(serviceStopReceiver, filter)
+//            ContextCompat.registerReceiver(this, serviceStopReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+//        }
         locationClient = ServicioUbicacion(applicationContext, LocationServices.getFusedLocationProviderClient(applicationContext))
     }
 
@@ -44,6 +63,7 @@ class LocationService: Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         utils.ServiceRunning = true
         println(" ****** onStartCommand ******")
+
         when(intent?.action){
             SERVICE_START -> empezar()
             SERVICE_STOP -> detener()
@@ -54,6 +74,7 @@ class LocationService: Service() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun empezar() {
         println(" A DARRLEEEEEEEEEEEEEE")
+
         val noti = Notification.Builder(this, "Mylocation")
             .setContentTitle("Comsi Custodio")
             .setContentText("Servicio activo")
@@ -61,13 +82,8 @@ class LocationService: Service() {
             .setPriority(Notification.PRIORITY_DEFAULT)
             .setOngoing(true)
             .build()
-        //val notiManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-//        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//        notificationManager.notify(1, noti)
-        //noti.flags = Notification.FLAG_ONGOING_EVENT
-
-//100000L 10000L
+        //100000L 10000L
         locationClient
             .getLocationUpdates(5000L)
             //.catch { e -> e.printStackTrace() }
@@ -109,6 +125,20 @@ class LocationService: Service() {
         println("-------  SERVICIO CANCELADO  -------")
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        serviceScope.cancel()
+        println("------- >30 SERVICIO CANCELADO  -------")
+        var tipo = 0
+        var acc = "Usuario cerro la app"
+        var date = utils.getCurrentDate()
+        var latt =  lat0
+        var longg = long0
+        val tkn = preferencias.getGlobalDataWithContext(applicationContext, "TM")
+        println("--- ♠♠♠♠ TKN with Context FROM SERVICE: ${tkn}")
+        sendOnDestroyRegisger(tipo, acc, date, latt, longg, tkn)
+    }
+
     companion object {
         const val SERVICE_START = "SERVICE_START"
         const val SERVICE_STOP = "SERVICE_STOP"
@@ -116,6 +146,19 @@ class LocationService: Service() {
         var long0 = ""
     }
 
+    fun sendOnDestroyRegisger(tipo: Int, acc:String, date:String, latt:String, longg:String, tkn:String) {
+        val reApi = OneTimeWorkRequestBuilder<BotonesActivity.UpdloaWorker>()
+            .setInputData(
+                workDataOf(
+                    "tipo" to tipo, "acc" to acc, "date" to date,
+                    "latt" to latt, "longg" to longg, "tkn" to tkn
+                ),
+            )
+        val workManager = WorkManager.getInstance(application)
+        val continuation = workManager.beginWith(reApi.build())
+
+        continuation.enqueue()
+    }
 
 
 }

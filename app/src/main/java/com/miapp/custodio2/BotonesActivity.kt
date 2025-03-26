@@ -145,7 +145,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             preferencias.setGlobalData(this, "verM", "true")
             val intent = Intent(this, MisionActivity::class.java)
             startActivity(intent)
-            this.finish()
+            //this.finish()
         }
 
         //Boton de la FOTO
@@ -225,26 +225,27 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
     override fun onDestroy() {
         super.onDestroy()
         connManager.unregisterNetworkCallback(networkCallback)
-        Intent(applicationContext, LocationService::class.java).apply {
-            action = LocationService.SERVICE_STOP
-            startService(this)
-            println("KKK    Termine las ubicaciones SERVICE.    KKK")
-        }
+//        Intent(applicationContext, LocationService::class.java).apply {
+//            action = LocationService.SERVICE_STOP
+//            startService(this)
+//            println("KKK    Termine las ubicaciones SERVICE.    KKK")
+//        }
 
-        GlobalScope.launch {
-            val registro = Registro("0","Cerro la APP el usuario", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
-            //Aqui iba el mismo codigo de sendButtonData()
-            utils.doRequest(registro, this@BotonesActivity)
-        }
+        /** Otra manera de hacer el mismo request se puede SUSTITUIR por la de ABAJO */
+//        GlobalScope.launch {
+//            val registro = Registro("0","Cerro la APP el usuario", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+//            //Aqui iba el mismo codigo de sendButtonData()
+//            utils.doRequest(registro, this@BotonesActivity)
+//        }
 
         var tipo = 0
-        var acc = "Se CERRO la app !!"
+        var acc = "Usuario cerro la app"
         var date = utils.getCurrentDate()
         var latt =  LocationService.lat0
         var longg = LocationService.long0
         var tkn = preferencias.getGlobalData(this@BotonesActivity, "TM")
-        sendOnDestroyRegisger(tipo, acc, date, latt, longg, tkn)
-        println("888888888888888888  CERRE LA APP  8888888888888888888")
+        //sendOnDestroyRegisger(tipo, acc, date, latt, longg, tkn)
+        //println("888888888888888888  CERRE LA APP  8888888888888888888")
     }
 
     fun sendOnDestroyRegisger(tipo: Int, acc:String, date:String, latt:String, longg:String, tkn:String) {
@@ -418,6 +419,9 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             //progressDialog.dismiss()
         } else {
             utils.progressDialog!!.dismiss()
+            if(name == "Finalizar"){
+                return
+            }
             if(utils.infoRegistro!!.Success){
                 utils.progressDialog!!.dismiss()
                 Toast.makeText(this@BotonesActivity, "Comando: "+name+" enviado con exito", Toast.LENGTH_SHORT).show()
@@ -472,7 +476,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
 
     fun mostrarDialogoConValidacion(context: Context, registro: Registro, name:String) {
         val editText = EditText(context).apply {
-            hint = "Ingrese un el numero "
+            hint = "Ingrese el número"
         }
 
         var messageText = "Ingrese el código asigando"
@@ -484,8 +488,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
         }
 
         val dialog = AlertDialog.Builder(context)
-            .setTitle("Ingrese el Cdógio de Finalización")
-            .setMessage("Ingrese el código asigando")
+            .setTitle("Ingrese el Código de Finalización")
             .setView(editText)
             .setPositiveButton("Aceptar", null) // Se asigna después para evitar cierre automático
             .setNegativeButton("Salir") { dialog, _ ->
@@ -501,16 +504,26 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                 if (inputCod != preferencias.getGlobalData(this, "Codigo").toInt()) {
                     //editText.error = "Este campo no puede estar vacío"
                     dialog.setMessage("Número de finalizacón incorrecto")
+
+                    val newregistro = registro.copy(Accion = "Finalizar, código ${inputCod}")
+
+                    val gson = Gson().toJson(newregistro)
+                    println("REGISTRO COMO GSON EN FINALIZAR")
+                    println(gson)
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         //Toast.makeText(context, "Dato ingresado: $inputCod", Toast.LENGTH_SHORT).show()
-                        dialog.setMessage("Finalización enviado con exito !")
+                        //dialog.setMessage("Finalización enviado con exito !")
 
-                        registro.Accion.plus(" (${inputCod})")
-                        utils.doRequest(registro, this@BotonesActivity)
+                        //registro.Accion.plus(" (${inputCod})")
+                        val newregistro = registro.copy(Accion = "Finalizar, código ${inputCod}")
+
+                        utils.doRequest(newregistro, this@BotonesActivity)
                         responseRequest(name)
                         preferencias.setGlobalData(this@BotonesActivity, "FinalEnviado", "true")
                         //dialog.dismiss()
+                        dialog.dismiss()
+                        Toast.makeText(this@BotonesActivity, "Finalización enviado correctamente.", Toast.LENGTH_LONG).show()
                     }
                     // Validación correcta, procesar el dato y cerrar el diálogo
                 }

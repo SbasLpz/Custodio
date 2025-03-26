@@ -61,6 +61,7 @@ class MisionActivity : AppCompatActivity() {
     private lateinit var codPiloto: String
 
     var horaContacto = "indefinido"
+    var codsPais = arrayOf("502", "503", "504", "505", "506", "507")
     //var progressDialog2: android.app.ProgressDialog? = null
     //Progress dialog
     //private lateinit var progressDialog: ProgressDialog
@@ -112,6 +113,7 @@ class MisionActivity : AppCompatActivity() {
         //Settings progrss dialog foto upload
         Intent(applicationContext, LocationService::class.java).apply {
             action = LocationService.SERVICE_START
+            putExtra("TM", preferencias.getGlobalData(this@MisionActivity, "TM"))
             startService(this)
         }
 
@@ -422,7 +424,7 @@ class MisionActivity : AppCompatActivity() {
         binding.etHoraSolicitada.setText(preferencias.getGlobalData(this, "au_HoraSol"))
         binding.etHoraSalida.setText(preferencias.getGlobalData(this, "au_HoraSalida"))
         binding.etHoraContacto.setText(preferencias.getGlobalData(this, "au_HoraContacto"))
-        binding.etLugarPos.setText(preferencias.getGlobalData(this, "au_Lugar"))
+        //binding.etLugarPos.setText(preferencias.getGlobalData(this, "au_Lugar"))
         binding.etLugarSalida.setText(preferencias.getGlobalData(this, "au_LugarSalida"))
         binding.etMarchamoGps.setText(preferencias.getGlobalData(this, "au_Gps"))
         binding.etNotas.setText(preferencias.getGlobalData(this, "au_Notas"))
@@ -441,7 +443,7 @@ class MisionActivity : AppCompatActivity() {
             binding.etHoraPos.setText(preferencias.getGlobalData(this, "au_HoraPos"))
             binding.etLugarSalida.setText(preferencias.getGlobalData(this, "au_LugarSalida"))
             binding.etHoraSolicitada.setText(preferencias.getGlobalData(this, "au_HoraSol"))
-            binding.etLugarPos.setText(preferencias.getGlobalData(this, "au_Lugar"))
+            //binding.etLugarPos.setText(preferencias.getGlobalData(this, "au_Lugar"))
 
             binding.etHoraSalida.setText(preferencias.getGlobalData(this, "au_HoraSalida"))
 
@@ -943,10 +945,18 @@ class MisionActivity : AppCompatActivity() {
         /** Necesita venir con .Trim() **/
         var tel = preferencias.getGlobalData(this, pref)
 
-        var codTelefono = tel.trim().dropLast(8).replace("+", "")
+        //var codTelefono = tel.trim().dropLast(8).replace("+", "")
+        var codTelefono = if (tel.startsWith("+")) {
+            tel.trim().substring(1, 4) // Extrae desde el segundo carácter (ignora el "+")
+        } else if (tel.replace("+", "").trim().length == 11){
+            tel.trim().substring(0, 3) // Toma los primeros 3 caracteres si no tiene "+"
+        } else {
+            tel.trim().substring(0, 3) // Toma los primeros 3 caracteres si no tiene "+"
+        }
+
         var numTelefono = tel.takeLast(8)
 
-        if(codTelefono == "" || codTelefono == null) {
+        if(codTelefono == "" || codTelefono == null || !codsPais.contains(codTelefono)) {
             codTelefono = resources.getStringArray(R.array.codsPais).get(0)
         }
 

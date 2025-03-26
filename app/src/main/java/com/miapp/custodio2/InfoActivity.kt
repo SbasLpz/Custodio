@@ -50,7 +50,7 @@ class InfoActivity : AppCompatActivity() {
         }
 
         binding.btnReqExtraccion.setOnClickListener {
-            var solExtraccion = Extraccion(utils.latitude, utils.longitude, true, preferencias.getGlobalData(this, "TM"))
+            var solExtraccion = Extraccion(utils.latitude, utils.longitude, 1, preferencias.getGlobalData(this, "TM"))
             var gson = Gson().toJson(solExtraccion)
             println(gson)
             lifecycleScope.launch {
@@ -69,7 +69,7 @@ class InfoActivity : AppCompatActivity() {
         }
 
         binding.btnCancelExtraccion.setOnClickListener {
-            var solCancelExtraccion = Extraccion(utils.latitude, utils.longitude, false, preferencias.getGlobalData(this, "TM"))
+            var solCancelExtraccion = Extraccion(utils.latitude, utils.longitude, 0, preferencias.getGlobalData(this, "TM"))
             var gson = Gson().toJson(solCancelExtraccion)
             println(gson)
             lifecycleScope.launch {
