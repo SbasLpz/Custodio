@@ -62,7 +62,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
         setContentView(binding.root)
 
 //        GlobalScope.launch {
-//            val registro = Registro("0","Usuario en Botones", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+//            val registro = Registro("0","", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
 //            //Aqui iba el mismo codigo de sendButtonData()
 //            utils.doRequest(registro, this@BotonesActivity)
 //        }
@@ -81,47 +81,58 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
 
         lifecycleScope.launch {
             utils.startLocationUpdates(this@BotonesActivity)
-            //Solo la primera vez hara el request para traer los botones y guardarlos en las preferencias
-            if(preferencias.getGlobalData(this@BotonesActivity, "Sesion") == "primera"){
-                val btns = Botones(utils.claveApi)
-                utils.doRequest(btns, this@BotonesActivity)
-                //pasar el objeto a gson(string)
+            try {
+                //Solo la primera vez hara el request para traer los botones y guardarlos en las preferencias
+                if(preferencias.getGlobalData(this@BotonesActivity, "Sesion") == "primera"){
+                    val btns = Botones(utils.claveApi)
+                    utils.doRequest(btns, this@BotonesActivity)
+                    //pasar el objeto a gson(string)
+                    val gson = GsonBuilder().setPrettyPrinting().create()
+                    val jsonBotones = gson.toJson(utils.infoBotones)
+                    preferencias.setGlobalData(this@BotonesActivity, "infoBotones", jsonBotones)
+                    val gson2 = GsonBuilder().setPrettyPrinting().create()
+                    val jsonBotones2 = preferencias.getGlobalData(this@BotonesActivity, "infoBotones")
+                    botones = gson2.fromJson(jsonBotones2, BotonesRes::class.java)
+                }
+
+                //Cuando NO sea la Primera vez, cargara los botones de las preferencias
                 val gson = GsonBuilder().setPrettyPrinting().create()
-                val jsonBotones = gson.toJson(utils.infoBotones)
-                preferencias.setGlobalData(this@BotonesActivity, "infoBotones", jsonBotones)
-                val gson2 = GsonBuilder().setPrettyPrinting().create()
-                val jsonBotones2 = preferencias.getGlobalData(this@BotonesActivity, "infoBotones")
-                botones = gson2.fromJson(jsonBotones2, BotonesRes::class.java)
-            }
+                val jsonBotones = preferencias.getGlobalData(this@BotonesActivity, "infoBotones")
+                botones = gson.fromJson(jsonBotones, BotonesRes::class.java)
+                //Toast.makeText(this@BotonesActivity, "PRUEBA: "+botones!!.Data.get(0).Accion, Toast.LENGTH_SHORT).show()
 
-            //Cuando NO sea la Primera vez, cargara los botones de las preferencias
-            val gson = GsonBuilder().setPrettyPrinting().create()
-            val jsonBotones = preferencias.getGlobalData(this@BotonesActivity, "infoBotones")
-            botones = gson.fromJson(jsonBotones, BotonesRes::class.java)
-            //Toast.makeText(this@BotonesActivity, "PRUEBA: "+botones!!.Data.get(0).Accion, Toast.LENGTH_SHORT).show()
+                val theList: ArrayList<CardViewData> = ArrayList()
+                //---prueba
+                for (i in 0 until botones!!.Data.size){
+                    println(botones!!.Data[i].Icono)
+                    val item = CardViewData(i ,botones!!.Data[i].Icono, botones!!.Data[i].Nombre)
 
-            val theList: ArrayList<CardViewData> = ArrayList()
-            //---prueba
-            for (i in 0 until botones!!.Data.size){
-                println(botones!!.Data[i].Icono)
-                val item = CardViewData(i ,botones!!.Data[i].Icono, botones!!.Data[i].Nombre)
+                    theList += item
+                }
+                //--- fin prueba
+                binding.recyclerviewButtons.adapter = Adapter(theList, this@BotonesActivity)
 
-                theList += item
-            }
-            //--- fin prueba
-            binding.recyclerviewButtons.adapter = Adapter(theList, this@BotonesActivity)
-
-            binding.recyclerviewButtons.layoutManager = GridLayoutManager(this@BotonesActivity, 3).also {
-                it.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                    override fun getSpanSize(position: Int): Int {
-                        return if (position % 60 == 6)//Boton panico grande. Cambiar a == 7 para cuando la posicion del boton en la base de datos sea la septima.
-                            1//3
-                        else
-                            1
+                binding.recyclerviewButtons.layoutManager = GridLayoutManager(this@BotonesActivity, 3).also {
+                    it.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(position: Int): Int {
+                            return if (position % 60 == 6)//Boton panico grande. Cambiar a == 7 para cuando la posicion del boton en la base de datos sea la septima.
+                                1//3
+                            else
+                                1
+                        }
                     }
                 }
+                binding.recyclerviewButtons.setHasFixedSize(true)
+            } catch (e: java.lang.Exception) {
+                MaterialAlertDialogBuilder(this@BotonesActivity)
+                    .setTitle("Ocurrió un problema al cargar botones")
+                    .setMessage("Problema: ${e.javaClass} \nDescripción: ${e.message}")
+                    .setNeutralButton("Aceptar") { dialog, which ->
+                        // Respond to neutral button press
+                        return@setNeutralButton
+                    }
+                    .show()
             }
-            binding.recyclerviewButtons.setHasFixedSize(true)
         }
 
         if (utils.isServiceRunning(this, LocationService::class.java)){
@@ -172,7 +183,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             }
         }
 //        GlobalScope.launch(Dispatchers.Main) {
-//            val registro = Registro("0","Usuario en Botones", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+//            val registro = Registro("0","", utils.getCurrentDate(), LocationService.lat0, LocationService.long0, preferencias.getGlobalData(this@BotonesActivity, "TM"))
 //            //Aqui iba el mismo codigo de sendButtonData()
 //            utils.doRequest(registro, this@BotonesActivity)
 //        }
@@ -237,13 +248,6 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
 //            //Aqui iba el mismo codigo de sendButtonData()
 //            utils.doRequest(registro, this@BotonesActivity)
 //        }
-
-        var tipo = 0
-        var acc = "Usuario cerro la app"
-        var date = utils.getCurrentDate()
-        var latt =  LocationService.lat0
-        var longg = LocationService.long0
-        var tkn = preferencias.getGlobalData(this@BotonesActivity, "TM")
         //sendOnDestroyRegisger(tipo, acc, date, latt, longg, tkn)
         //println("888888888888888888  CERRE LA APP  8888888888888888888")
     }
@@ -500,8 +504,12 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
         dialog.setOnShowListener {
             val botonAceptar = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             botonAceptar.setOnClickListener {
-                val inputCod = editText.text.toString().toInt()
-                if (inputCod != preferencias.getGlobalData(this, "Codigo").toInt()) {
+                if( preferencias.getGlobalData(this, "Codigo") == "0" || preferencias.getGlobalData(this, "Codigo") == "null") {
+                    Toast.makeText(this, "El Servidor genero un código de 0 o null, no se puede verificar", Toast.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
+                val inputCod = editText.text.toString()
+                if (inputCod != preferencias.getGlobalData(this, "Codigo")) {
                     //editText.error = "Este campo no puede estar vacío"
                     dialog.setMessage("Número de finalizacón incorrecto")
 
@@ -510,6 +518,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                     val gson = Gson().toJson(newregistro)
                     println("REGISTRO COMO GSON EN FINALIZAR")
                     println(gson)
+                    Toast.makeText(this@BotonesActivity, "Código incorrecto", Toast.LENGTH_SHORT).show()
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         //Toast.makeText(context, "Dato ingresado: $inputCod", Toast.LENGTH_SHORT).show()

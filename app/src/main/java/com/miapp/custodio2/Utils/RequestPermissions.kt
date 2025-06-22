@@ -614,7 +614,7 @@ class RequestPermissions() {
             val jsonObject = JSONObject()
 
             jsonObject.put("Escopeta", datos.Escopeta)
-            //jsonObject.put("HoraContacto", datos.HoraContacto)
+            jsonObject.put("HoraContacto", datos.HoraContacto)
             jsonObject.put("Marchamo", datos.Marchamo)
             jsonObject.put("MarchamoFiscal", datos.MarchamoFiscal)
             jsonObject.put("MarchamoGPS", datos.MarchamoGPS)

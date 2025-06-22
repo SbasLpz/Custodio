@@ -130,7 +130,8 @@ class LocationService: Service() {
         serviceScope.cancel()
         println("------- >30 SERVICIO CANCELADO  -------")
         var tipo = 0
-        var acc = "Usuario cerro la app"
+        //aca iba usuario cerro la app
+        var acc = "El usuario cerro la app"
         var date = utils.getCurrentDate()
         var latt =  lat0
         var longg = long0

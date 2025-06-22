@@ -32,12 +32,13 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
-import com.google.gson.Gson
 import com.miapp.custodio2.Utils.LocationService
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 class MisionActivity : AppCompatActivity() {
@@ -61,7 +62,7 @@ class MisionActivity : AppCompatActivity() {
     private lateinit var codPiloto: String
 
     var horaContacto = "indefinido"
-    var codsPais = arrayOf("502", "503", "504", "505", "506", "507")
+    var codsPais = arrayOf("", "502", "503", "504", "505", "506", "507")
     //var progressDialog2: android.app.ProgressDialog? = null
     //Progress dialog
     //private lateinit var progressDialog: ProgressDialog
@@ -95,8 +96,6 @@ class MisionActivity : AppCompatActivity() {
                 selectedSpinnerInt = 0
             }
         }
-
-
 
         createSpinner(binding.spinnerCountry1, R.array.codsPais) {
                 selectedItem, position -> codTransporte = selectedItem.substringAfter(") ") + binding.etTelTransportista.text.toString()
@@ -139,27 +138,48 @@ class MisionActivity : AppCompatActivity() {
             //Empezara los location updates en la actividad
             utils.startLocationUpdates(this)
             //Cargara los datos NO Editables del /Autenticar ya que verM sera true
-            loadDatos()
-            //
-            loadDatosUpdated()
+            try {
+                loadDatos()
+                loadDatosUpdated()
+            } catch (e: Exception) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle("Problemas al cargar datos del formulario")
+                    .setMessage("Problema: ${e.javaClass} \nDescripción: ${e.message}")
+                    .setNeutralButton("Aceptar") { dialog, which ->
+                        // Respond to neutral button press
+                        return@setNeutralButton
+                    }
+                    .show()
+            }
         } else {
             //Empezara los location updates en la actividad
             utils.startLocationUpdates(this)
-
-            when(preferencias.getGlobalData(this, "Sesion")){
-                "segunda" -> {
-                    esPrimeraVez = false
-                    loadDatosUpdated()
-                    startActivity(Intent(this, BotonesActivity::class.java))
-                    this.finish()
+            try {
+                when(preferencias.getGlobalData(this, "Sesion")){
+                    "segunda" -> {
+                        esPrimeraVez = false
+                        loadDatosUpdated()
+                        startActivity(Intent(this, BotonesActivity::class.java))
+                        this.finish()
+                    }
+                    "primera" -> {
+                        esPrimeraVez = true
+                        //Carga los datos del response de /Autenticar para mostrarlo en el Mision
+                        loadDatos()
+                    }
+                    else -> {esPrimeraVez = false}
                 }
-                "primera" -> {
-                    esPrimeraVez = true
-                    //Carga los datos del response de /Autenticar para mostrarlo en el Mision
-                    loadDatos()
-                }
-                else -> {esPrimeraVez = false}
+            } catch (e: Exception) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle("Excepción al cargar algún dato del formulario")
+                    .setMessage("Excepción: ${e.javaClass} \nDescripción: ${e.javaClass} ")
+                    .setNeutralButton("Aceptar") { dialog, which ->
+                        // Respond to neutral button press
+                        return@setNeutralButton
+                    }
+                    .show()
             }
+
         }
         //○↑ -alt24 FIN Seccion de Carga de datos ↑○ alt9
 
@@ -201,17 +221,7 @@ class MisionActivity : AppCompatActivity() {
         //FIN - Obtiene la Direccion de Enrtrega
         binding.btnSiguiente.setOnClickListener {
             println("♦♦♦♦ ♦♦♦ ♦♦ ♦ tel Transporte ${codPiloto}")
-            //binding.etNotas.setText(horaContacto)
-            //binding.etNotas.setText(codPiloto+binding.etTelTransportista.text.toString()+" -- "+codTransporte)
-            //binding.etNotas.setText(getCodTransporte()+" // "+getCodPiloto())
-            //return@setOnClickListener
 
-//            GlobalScope.launch {
-//                Intent(applicationContext, LocationService::class.java).apply {
-//                    action = LocationService.SERVICE_START
-//                    startService(this)
-//                }
-//            }
             println("******* btnSiguiente - SELECTED del Spinner: ${selectedSpinner} ********")
             try {
                 /*utils.stopLocationUpdates()*/
@@ -411,7 +421,18 @@ class MisionActivity : AppCompatActivity() {
 
         spinner.setSelection(preferencias.getGlobalData(this, "au_Pais").toInt())
 
-        binding.etTelefonoPiloto.setText(preferencias.getGlobalData(this, "au_Tel"))
+        println("CARGUE TELS DE TEL ${preferencias.getGlobalData(this, "au_Tel")} y de TELTRANS ${preferencias.getGlobalData(this, "au_TelTrans")}")
+        binding.etTelefonoPiloto.setText(getAuTel("au_Tel")["num"])
+        val indexSpinnerTel = resources.getStringArray(R.array.codsPais).indexOfFirst {
+            it.contains(getAuTel("au_Tel")["cod"].toString())
+        }
+        binding.spinnerCountry2.setSelection(indexSpinnerTel)
+        //binding.etTelTransportista.setText(preferencias.getGlobalData(this, "au_TelTrans"))
+        binding.etTelTransportista.setText(getAuTel("au_TelTrans")["num"])
+        val indexSpinnerTelTrans = resources.getStringArray(R.array.codsPais).indexOfFirst {
+                it.contains(getAuTel("au_TelTrans")["cod"].toString())
+            }
+        binding.spinnerCountry1.setSelection(indexSpinnerTelTrans)
 
         when(preferencias.getGlobalData(this, "au_Sellado")){
             "" -> binding.rbSelladoMarchamo.isChecked = true
@@ -427,6 +448,7 @@ class MisionActivity : AppCompatActivity() {
         //binding.etLugarPos.setText(preferencias.getGlobalData(this, "au_Lugar"))
         binding.etLugarSalida.setText(preferencias.getGlobalData(this, "au_LugarSalida"))
         binding.etMarchamoGps.setText(preferencias.getGlobalData(this, "au_Gps"))
+        binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_NombreTransporte"))
         binding.etNotas.setText(preferencias.getGlobalData(this, "au_Notas"))
 
         val testval2 = preferencias.getGlobalData(this, "au_HoraContacto")
@@ -439,6 +461,7 @@ class MisionActivity : AppCompatActivity() {
         //venga del /Autenticar
         if (preferencias.getGlobalData(this, "verM") != "true"){
             //Editables
+            //val debugvalorpais = preferencias.getGlobalData(this, "au_Pais")
             spinner.setSelection(preferencias.getGlobalData(this, "au_Pais").toInt())
             binding.etHoraPos.setText(preferencias.getGlobalData(this, "au_HoraPos"))
             binding.etLugarSalida.setText(preferencias.getGlobalData(this, "au_LugarSalida"))
@@ -448,11 +471,11 @@ class MisionActivity : AppCompatActivity() {
             binding.etHoraSalida.setText(preferencias.getGlobalData(this, "au_HoraSalida"))
 
             //binding.etTelTransportista.setText(preferencias.getGlobalData(this, "au_TelTrans"))
-            binding.etTelTransportista.setText(getAuTel("au_TelTrans")["num"])
-            val indexSpinner1 = resources.getStringArray(R.array.codsPais).indexOfFirst {
-                it.contains(getAuTel("au_TelTrans")["cod"].toString())
-            }
-            binding.spinnerCountry1.setSelection(indexSpinner1)
+//            binding.etTelTransportista.setText(getAuTel("au_TelTrans")["num"])
+//            val indexSpinner1 = resources.getStringArray(R.array.codsPais).indexOfFirst {
+//                it.contains(getAuTel("au_TelTrans")["cod"].toString())
+//            }
+//            binding.spinnerCountry1.setSelection(indexSpinner1)
 
 
             binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_Trans"))
@@ -467,11 +490,17 @@ class MisionActivity : AppCompatActivity() {
             }
             binding.spinnerCountry2.setSelection(indexSpinner2)
 
+            binding.etTelTransportista.setText(getAuTel("au_TelTrans")["num"])
+            val indexSpinner3 = resources.getStringArray(R.array.codsPais).indexOfFirst {
+                it.contains(getAuTel("au_TelTrans")["cod"].toString())
+            }
+            binding.spinnerCountry1.setSelection(indexSpinner3)
+
+
             binding.etHoraContacto.setText(preferencias.getGlobalData(this, "au_HoraContacto"))
 
-
             binding.etMarchamoFiscal.setText(preferencias.getGlobalData(this, "au_Fiscal"))
-            binding.etMarchamoGps.setText(preferencias.getGlobalData(this, "au_Gps"))
+            binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_NombreTransporte"))
             binding.etNotas.setText(preferencias.getGlobalData(this, "au_Notas"))
             when(preferencias.getGlobalData(this, "au_Sellado")){
                 "" -> binding.rbSelladoMarchamo.isChecked = true
@@ -489,10 +518,10 @@ class MisionActivity : AppCompatActivity() {
         if (selectedSpinnerInt != valor){
             spinner.setSelection(valor)
         }
-
+        println("GETCODTRANSPORTE:${getCodTransporte()} y getGlobalData:${ preferencias.getGlobalData(this, "TelTrans").trim()}")
         if (getCodTransporte() != preferencias.getGlobalData(this, "TelTrans").trim()){
             //binding.etTelTransportista.setText(preferencias.getGlobalData(this, "TelTrans"))
-            if (getCodPiloto() != preferencias.getGlobalData(this, "TelTrans")){
+            if (getCodTransporte() != preferencias.getGlobalData(this, "TelTrans")){
                 binding.etTelTransportista.setText(getAuTel("TelTrans")["num"])
                 val indexSpinner1 = resources.getStringArray(R.array.codsPais).indexOfFirst {
                     it.contains(getAuTel("TelTrans")["cod"].toString())
@@ -511,14 +540,24 @@ class MisionActivity : AppCompatActivity() {
         }
 
 
-        if (getCodPiloto() != preferencias.getGlobalData(this, "Tel")){
+        println("GETCODPILOTO:${getCodPiloto()} y getGlobalData:${ preferencias.getGlobalData(this, "Tel").trim()}")
+        if (getCodPiloto() != preferencias.getGlobalData(this, "Tel").trim()){
             //binding.etTelefonoPiloto.setText(preferencias.getGlobalData(this, "Tel"))
+            println(getAuTel("Tel")["num"] +" AND "+ getAuTel("Tel")["num"])
             binding.etTelefonoPiloto.setText(getAuTel("Tel")["num"])
             val indexSpinner2 = resources.getStringArray(R.array.codsPais).indexOfFirst {
                 it.contains(getAuTel("Tel")["cod"].toString())
             }
             binding.spinnerCountry2.setSelection(indexSpinner2)
         }
+//        if (getCodTransporte() != preferencias.getGlobalData(this, "TelTransporte")){
+//            //binding.etTelefonoPiloto.setText(preferencias.getGlobalData(this, "Tel"))
+//            binding.etTelTransportista.setText(getAuTel("TelTransporte")["num"])
+//            val indexSpinner1 = resources.getStringArray(R.array.codsPais).indexOfFirst {
+//                it.contains(getAuTel("TelTransporte")["cod"].toString())
+//            }
+//            binding.spinnerCountry1.setSelection(indexSpinner1)
+//        }
 //        if (checkboxPredio.isChecked != preferencias.getGlobalData(this, "UsoPredio").toBoolean()){
 //            checkboxPredio.isChecked = preferencias.getGlobalData(this, "UsoPredio").toBoolean()
 //        }+
@@ -533,6 +572,9 @@ class MisionActivity : AppCompatActivity() {
         }
         if (binding.etMarchamoGps.text.toString() != preferencias.getGlobalData(this, "M_Gps")){
             binding.etMarchamoGps.setText(preferencias.getGlobalData(this, "M_Gps"))
+        }
+        if (binding.etNombreTransportista.text.toString() != preferencias.getGlobalData(this, "NombreTransporte")){
+            binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "NombreTransporte"))
         }
         if (binding.etNotas.text.toString() != preferencias.getGlobalData(this, "Notas")){
             binding.etNotas.setText(preferencias.getGlobalData(this, "Notas"))
@@ -551,19 +593,24 @@ class MisionActivity : AppCompatActivity() {
     //Establece los campos editables como preferencias
     //Se establcen la primera vez que se inica sesion Sesion = primera
     private fun setPreferencias(){
-        val valor = if (selectedSpinnerInt == 0) "7" else selectedSpinnerInt.toString()
+        val valor = if (selectedSpinnerInt == 0) "0" else selectedSpinnerInt.toString()
         preferencias.setGlobalData(this, "Pais", valor)
 
         //preferencias.setGlobalData(this, "TelTrans", binding.etTelTransportista.text.toString())
+        //println()
+        println("setPreferencias() = ${getCodTransporte()}")
         preferencias.setGlobalData(this, "TelTrans", getCodTransporte())
         preferencias.setGlobalData(this, "Trans", binding.etNombreTransportista.text.toString())
         //preferencias.setGlobalData(this, "UsoPredio", checkboxPredio.isChecked.toString())
         preferencias.setGlobalData(this, "Arma", binding.etNumArma.text.toString())
 
         preferencias.setGlobalData(this, "Tel", getCodPiloto())
+        preferencias.setGlobalData(this, "TelTransporte", getCodTransporte())
+
         preferencias.setGlobalData(this, "Sellado", sellado)
         preferencias.setGlobalData(this, "M_Fiscal", binding.etMarchamoFiscal.text.toString())
         preferencias.setGlobalData(this, "M_Gps", binding.etMarchamoGps.text.toString())
+        preferencias.setGlobalData(this, "NombreTransporte", binding.etNombreTransportista.text.toString())
         preferencias.setGlobalData(this, "Notas", binding.etNotas.text.toString())
 
         preferencias.setGlobalData(this, "HoraContacto", binding.etHoraContacto.text.toString())
@@ -575,7 +622,7 @@ class MisionActivity : AppCompatActivity() {
         val valor = if (preferencias.getGlobalData(this, "Pais").toInt() == 7) 0 else preferencias.getGlobalData(this, "Pais").toInt()
 
         if (selectedSpinnerInt != valor){
-            val valor2 = if (selectedSpinnerInt == 0) "7" else selectedSpinnerInt.toString()
+            val valor2 = if (selectedSpinnerInt == 0) "0" else selectedSpinnerInt.toString()
             //Update request
             val update = Update("PAIS", preferencias.getGlobalData(this, "Pais"), valor2,
                 utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
@@ -583,6 +630,7 @@ class MisionActivity : AppCompatActivity() {
             preferencias.setGlobalData(this, "Pais", valor2)
             println("UPDATE PAIS= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
         }
+        println("updateData() = ${getCodTransporte()}")
         if (getCodTransporte() != preferencias.getGlobalData(this, "TelTrans").trim()){
             //Update request
             val update = Update("TELEFONOTRANSPORTE", preferencias.getGlobalData(this, "TelTrans"), getCodTransporte(),
@@ -621,7 +669,7 @@ class MisionActivity : AppCompatActivity() {
             //Actualiza las preferencias
             /*preferencias.updateGlobalData(this, "Tel", binding.etNumArma.text.toString())*/
             preferencias.setGlobalData(this, "Arma", binding.etNumArma.text.toString())
-            println("UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+            println("UPDATE ARMA= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
         }
 
         //TELEFONO
@@ -636,6 +684,16 @@ class MisionActivity : AppCompatActivity() {
             preferencias.setGlobalData(this, "Tel", getCodPiloto())
             println("UPDATE Tel= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
         }
+//        if (getCodTransporte() != preferencias.getGlobalData(this, "TelTransporte")){
+//            //Update request
+//            val update = Update("TELEFONOTRANSPORTE", preferencias.getGlobalData(this, "TelTransporte"), getCodTransporte(),
+//                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+//
+//            utils.doRequest(update, this)
+//            //Actualiza las preferencias
+//            preferencias.setGlobalData(this, "TelTransporte", getCodTransporte())
+//            println("UPDATE TelTRansporte= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+//        }
         //SELLADO
         if (sellado != preferencias.getGlobalData(this, "Sellado")){
             //Update request
@@ -684,6 +742,17 @@ class MisionActivity : AppCompatActivity() {
             preferencias.setGlobalData(this, "M_Gps", binding.etMarchamoGps.text.toString())
             println("UPDATE M Gps= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
         }
+        //Nombre trnsportista
+        if (binding.etNombreTransportista.text.toString() != preferencias.getGlobalData(this, "NombreTransporte")){
+            //Update request
+            val update = Update("NOMBRETRANSPORTE", preferencias.getGlobalData(this, "NombreTransporte"), binding.etNombreTransportista.text.toString(),
+                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+
+            utils.doRequest(update, this)
+            //Actualiza las preferencias
+            preferencias.setGlobalData(this, "NombreTransporte", binding.etNombreTransportista.text.toString())
+            println("UPDATE NombreTransporte= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+        }
         //NOTAS
         if (binding.etNotas.text.toString() != preferencias.getGlobalData(this, "Notas")){
             //Update request
@@ -711,7 +780,7 @@ class MisionActivity : AppCompatActivity() {
         val valor = if (auPais == 7) 0 else pais
 
         if (selectedSpinnerInt != valor){
-            val valor2 = if (selectedSpinnerInt == 0) "7" else selectedSpinnerInt.toString()
+            val valor2 = if (selectedSpinnerInt == 0) "0" else selectedSpinnerInt.toString()
 
             //Update request
             val update = Update("PAIS", preferencias.getGlobalData(this, "au_Pais"), valor2,
@@ -723,28 +792,28 @@ class MisionActivity : AppCompatActivity() {
                 preferencias.updateGlobalData(this, "Pais", valor2)
             }
         }
-        if (getCodTransporte() != preferencias.getGlobalData(this, "au_TelTrans").trim()){
-            //Update request
-            val update = Update("TELEFONOTRANSPORTE", preferencias.getGlobalData(this, "au_TelTrans"), getCodTransporte(),
-                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
-
-            utils.doRequest(update, this)
-            println("1UPDATE TelTrans= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
-            if(utils.infoUpdate!!.Success){
-                preferencias.updateGlobalData(this, "TelTrans", getCodTransporte())
-            }
-        }
-        if (binding.etNombreTransportista.text.toString() != preferencias.getGlobalData(this, "au_Trans")){
-            //Update request
-            val update = Update("TRANSPORTE", preferencias.getGlobalData(this, "au_Trans"), binding.etNombreTransportista.text.toString(),
-                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
-
-            utils.doRequest(update, this)
-            println("1UPDATE TRANSPORTE= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
-            if(utils.infoUpdate!!.Success){
-                preferencias.updateGlobalData(this, "Trans", binding.etNombreTransportista.text.toString())
-            }
-        }
+//        if (getCodTransporte() != preferencias.getGlobalData(this, "au_TelTrans").trim()){
+//            //Update request
+//            val update = Update("TELEFONOTRANSPORTE", preferencias.getGlobalData(this, "au_TelTrans"), getCodTransporte(),
+//                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+//
+//            utils.doRequest(update, this)
+//            println("1UPDATE TelTrans= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+//            if(utils.infoUpdate!!.Success){
+//                preferencias.updateGlobalData(this, "TelTrans", getCodTransporte())
+//            }
+//        }
+//        if (binding.etNombreTransportista.text.toString() != preferencias.getGlobalData(this, "au_Trans")){
+//            //Update request
+//            val update = Update("TRANSPORTE", preferencias.getGlobalData(this, "au_Trans"), binding.etNombreTransportista.text.toString(),
+//                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+//
+//            utils.doRequest(update, this)
+//            println("1UPDATE TRANSPORTE= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+//            if(utils.infoUpdate!!.Success){
+//                preferencias.updateGlobalData(this, "Trans", binding.etNombreTransportista.text.toString())
+//            }
+//        }
         //ARMA
         if (binding.etNumArma.text.toString() != preferencias.getGlobalData(this, "au_Arma")){
             //Update request
@@ -770,6 +839,18 @@ class MisionActivity : AppCompatActivity() {
                 preferencias.updateGlobalData(this, "Tel", getCodPiloto())
             }
         }
+
+        if (getCodTransporte() != preferencias.getGlobalData(this, "au_TelTrans")){
+            //Update request
+            val update = Update("TELEFONOTRANSPORTE", preferencias.getGlobalData(this, "au_TelTrans"), getCodTransporte(),
+                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+
+            utils.doRequest(update, this)
+            println("1UPDATE TelTransporte= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+            if(utils.infoUpdate!!.Success){
+                preferencias.updateGlobalData(this, "TelTransporte", getCodTransporte())
+            }
+        }
         //SELLADO
         if (sellado != preferencias.getGlobalData(this, "au_Sellado")){
             //Update request
@@ -786,13 +867,13 @@ class MisionActivity : AppCompatActivity() {
         //HORA CONTACTO
         if (binding.etHoraContacto.text.toString() != preferencias.getGlobalData(this, "au_HoraContacto")){
             //Update request
-            val update = Update("HoraContacto", preferencias.getGlobalData(this, "au_HoraContacto"), binding.etHoraContacto.text.toString(),
+            val update = Update("FechaContacto", preferencias.getGlobalData(this, "au_HoraContacto"), binding.etHoraContacto.text.toString(),
                 utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
 
             utils.doRequest(update, this)
             println("1UPDATE Hora Contacto = Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
             if(utils.infoUpdate!!.Success){
-                preferencias.updateGlobalData(this, "HoraContacto", binding.etHoraContacto.text.toString())
+                preferencias.updateGlobalData(this, "FechaContacto", binding.etHoraContacto.text.toString())
             }
         }
 
@@ -820,6 +901,18 @@ class MisionActivity : AppCompatActivity() {
                 preferencias.updateGlobalData(this, "M_Gps", binding.etMarchamoGps.text.toString())
             }
         }
+        //Nombre transporte
+        if (binding.etNombreTransportista.text.toString() != preferencias.getGlobalData(this, "au_NombreTransporte")){
+            //Update request
+            val update = Update("TRANSPORTE", preferencias.getGlobalData(this, "au_NombreTransporte"), binding.etNombreTransportista.text.toString(),
+                utils.latitude, utils.longitude, preferencias.getGlobalData(this, "TM"))
+
+            utils.doRequest(update, this)
+            println("1UPDATE NombreTransporte= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+            if(utils.infoUpdate!!.Success){
+                preferencias.updateGlobalData(this, "NombreTransporte", binding.etNombreTransportista.text.toString())
+            }
+        }
         //NOTAS
         if (binding.etNotas.text.toString() != preferencias.getGlobalData(this, "au_Notas")){
             //Update request
@@ -837,13 +930,25 @@ class MisionActivity : AppCompatActivity() {
     private suspend fun primeraSesion(){
 
         //Request a /NuevaMision
-        val horaContacto = binding.etHoraContacto.text
+        var horaContacto = binding.etHoraContacto.text
+
+        val isDateOrText = try {
+            SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).parse(horaContacto.toString())
+        } catch (e: Exception) {
+            ""
+        }
+
+        if (isDateOrText == ""){
+            horaContacto = ""
+        }
+
+        println("HORA CONTACTO BEFORE /NUEVAMISION =${horaContacto}=")
         val mision = Mision(binding.etNumArma.text.toString(), horaContacto.toString(), "", binding.etMarchamoFiscal.text.toString(), binding.etMarchamoGps.text.toString(),
             binding.etNotas.text.toString(), preferencias.getGlobalData(this@MisionActivity, "Rui"), binding.etNombrePiloto.text.toString(),
 
             binding.etPlacaCabezal.text.toString(), sellado, getCodPiloto(),
-            preferencias.getGlobalData(this@MisionActivity, "TM"), getCodTransporte(),
-            binding.etNombreTransportista.text.toString(), "0", /*selectedSpinnerInt.toString(), */ /* binding.etHoraContacto.text.toString()*/)
+            preferencias.getGlobalData(this@MisionActivity, "TM"),
+            binding.etNombreTransportista.text.toString(), getCodTransporte(), "0", /*selectedSpinnerInt.toString(), */ /* binding.etHoraContacto.text.toString()*/)
         //if (checkboxPredio.isChecked) "1" else "0"
 
         //Establece los campos modificables como preferencias
@@ -895,6 +1000,7 @@ class MisionActivity : AppCompatActivity() {
             println("Fallo Mision")
             println("Success: "+info.Success.toString()+" Mensaje: "+info.Mensaje)
             Toast.makeText(this@MisionActivity, "Success: "+info.Success.toString()+" Mensaje: "+info.Mensaje, Toast.LENGTH_SHORT).show()
+            binding.etNotas.setText(info.Mensaje)
             //utils.stopLocationUpdates()
             utils.progressDialog!!.dismiss()
         }
@@ -924,47 +1030,161 @@ class MisionActivity : AppCompatActivity() {
     }
 
     fun getCodTransporte(): String {
-        var cod = binding.spinnerCountry1.selectedItem.toString().substringAfter(") ")
+        var cod = binding.spinnerCountry1.selectedItem.toString().substringAfter(") +")
         if(cod == "Sin código") {
             cod = ""
         }
-        codTransporte = cod + binding.etTelTransportista.text.toString()
-        return  codTransporte
+
+        if(binding.etTelTransportista.text.toString().length < 8){
+            codTransporte = cod + binding.etTelTransportista.text.toString()
+        }else {
+            codTransporte = cod + binding.etTelTransportista.text.toString()
+        }
+
+        codTransporte = codTransporte.replace("+", "").trim()
+        //println("GET CODE TRANSPORTE Xvz = ${binding.etTelTransportista.text.toString().trim()}")
+        if (binding.etTelTransportista.text.toString().trim() == "" || binding.etTelTransportista.text.toString().trim() == "null"){
+            codTransporte = "0"
+        }
+
+        return codTransporte
     }
 
     fun getCodPiloto(): String {
-        var cod = binding.spinnerCountry2.selectedItem.toString().substringAfter(") ")
+        var cod = binding.spinnerCountry2.selectedItem.toString().substringAfter(") +")
         if(cod == "Sin código") {
             cod = ""
         }
-        codPiloto = cod + binding.etTelefonoPiloto.text.toString()
-        return  codPiloto
+
+        if(binding.etTelefonoPiloto.text.toString().length < 8){
+            codPiloto = cod + binding.etTelefonoPiloto.text.toString()
+        }else {
+            codPiloto = cod + binding.etTelefonoPiloto.text.toString()
+        }
+
+        codPiloto = codPiloto.replace("+", "").trim()
+        if (binding.etTelefonoPiloto.text.toString().trim() == "" || binding.etTelefonoPiloto.text.toString().trim() == "null"){
+            codPiloto = "0"
+        }
+        return codPiloto
     }
 
     private fun getAuTel(pref: String): Map<String, String> {
         /** Necesita venir con .Trim() **/
         var tel = preferencias.getGlobalData(this, pref)
+        if(preferencias.getGlobalData(this, "verM") == "true"){
+            var key = if(pref == "au_TelTrans") "TelTrans" else "Tel"
+            tel = preferencias.getGlobalData(this, key)
+        }
+        //var tel = preferencias.getGlobalData(this, pref)
 
+        var codTelefono = resources.getStringArray(R.array.codsPais).get(0)
         //var codTelefono = tel.trim().dropLast(8).replace("+", "")
-        var codTelefono = if (tel.startsWith("+")) {
-            tel.trim().substring(1, 4) // Extrae desde el segundo carácter (ignora el "+")
-        } else if (tel.replace("+", "").trim().length == 11){
-            tel.trim().substring(0, 3) // Toma los primeros 3 caracteres si no tiene "+"
+        println("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF tel: ${tel} AND selectedspinner: ${binding.spinnerCountry1.selectedItemPosition}")
+
+        /** DESCOMENTAR ESTO*/
+        if (tel == "" || tel == "null" || tel == "0"){
+            //codTelefono = resources.getStringArray(R.array.codsPais).get(0)
+            var pair = mapOf<String, String>(
+                "cod" to codTelefono,
+                "num" to "0"
+            )
+            return  pair
+            //if (tel.toLongOrNull() != null)
+        } else if (tel.matches(Regex("\\d+"))){
+            if(tel.length > 3) {
+                val elcod = tel.trim().substring(0, 3)
+
+                codTelefono = if (codsPais.contains(elcod)) {
+                    resources.getStringArray(R.array.codsPais).get(codsPais.indexOf(elcod))
+                } else { resources.getStringArray(R.array.codsPais).get(0) }
+            }
+            if(tel.length == 8+3){
+                val cod = tel.trim().substring(0, 3)
+
+                codTelefono = if (codsPais.contains(cod)) {
+                    resources.getStringArray(R.array.codsPais).get(codsPais.indexOf(cod))
+                } else { resources.getStringArray(R.array.codsPais).get(0) }
+
+                var numTelefono = tel.substring(3)
+                //tel = tel.trim().substring(3, 11)
+                var pair = mapOf<String, String>(
+                    "cod" to codTelefono,
+                    "num" to numTelefono
+                )
+                println("PAIR RETURNED: cod_${pair["cod"]} num_${pair["num"]}")
+                return  pair
+            } else if(tel.length == 8 && codTelefono == "Sin código"){
+                var pair = mapOf<String, String>(
+                    "cod" to codTelefono,
+                    "num" to tel
+                )
+
+                return pair
+            } else if (tel.length < 8+3){
+                var pair: Map<String, String>
+                try {
+                    val cod = tel.trim().substring(0, 3)
+                    codTelefono = if (codsPais.contains(cod)) {
+                        resources.getStringArray(R.array.codsPais).get(codsPais.indexOf(cod))
+                    } else { resources.getStringArray(R.array.codsPais).get(0) }
+                    var numTelefono = tel.substring(3)
+                    if(codTelefono == "Sin código"){
+                        numTelefono = tel
+                    }
+                    pair = mapOf<String, String>(
+                        "cod" to codTelefono,
+                        "num" to numTelefono
+                    )
+                    return pair
+                } catch (e: Exception){
+                    pair = mapOf<String, String>(
+                        "cod" to codTelefono,
+                        "num" to tel
+                    )
+                }
+                return pair
+            } else {
+                codTelefono = resources.getStringArray(R.array.codsPais).get(0)
+                var numTelefono = tel.takeLast(8)
+                var pair = mapOf<String, String>(
+                    "cod" to codTelefono,
+                    "num" to "0"
+                )
+                println("PAIR RETURNED: cod_${pair["cod"]} num_${pair["num"]}")
+                return  pair
+            }
+
         } else {
-            tel.trim().substring(0, 3) // Toma los primeros 3 caracteres si no tiene "+"
-        }
-
-        var numTelefono = tel.takeLast(8)
-
-        if(codTelefono == "" || codTelefono == null || !codsPais.contains(codTelefono)) {
+            //no fue int
             codTelefono = resources.getStringArray(R.array.codsPais).get(0)
+            var pair = mapOf<String, String>(
+                "cod" to codTelefono,
+                "num" to "0"
+            )
+            return  pair
         }
+        /** DESCOMENTAR ESTO*/
 
-        var pair = mapOf<String, String>(
-            "cod" to codTelefono,
-            "num" to numTelefono
-        )
-        return pair
+
+//        codTelefono = if (tel.startsWith("+")) {
+//            tel.trim().substring(1, 4) // Extrae desde el segundo carácter (ignora el "+")
+//        } else if (tel.replace("+", "").trim().length == 11){
+//            tel.trim().substring(0, 3) // Toma los primeros 3 caracteres si no tiene "+"
+//        } else {
+//            tel.trim().substring(0, 3) // Toma los primeros 3 caracteres si no tiene "+"
+//        }
+//        var numTelefono = tel.takeLast(8)
+//
+//        if(codTelefono == "" || codTelefono == null || !codsPais.contains(codTelefono)) {
+//            codTelefono = resources.getStringArray(R.array.codsPais).get(0)
+//        }
+//
+//        var pair = mapOf<String, String>(
+//            "cod" to codTelefono,
+//            "num" to numTelefono
+//        )
+//        return pair
     }
 
     private fun showTimePicker() {
@@ -985,8 +1205,13 @@ class MisionActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 var fechaActual = LocalDate.now()
                 var apiDate = LocalDateTime.of(fechaActual.year, fechaActual.month, fechaActual.dayOfMonth, timePicker.hour, timePicker.minute)
-                apiDate.format(DateTimeFormatter.ISO_DATE_TIME)
-                horaContacto = apiDate.toString()
+                /** FORMATO: "2025-03-26T14:20" */
+                //apiDate.format(DateTimeFormatter.ISO_DATE_TIME)
+
+                /** FORMATO: "dd/MM/yyyy HH:mm" */
+                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                //apiDate.format(formatter)
+                horaContacto = apiDate.format(formatter).toString()
             }
 
             binding.etHoraContacto.setText(horaContacto)

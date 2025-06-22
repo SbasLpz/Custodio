@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                 utils.progressDialog = ProgressDialog(this)
                 utils.progressDialog!!.theme = ProgressDialog.THEME_LIGHT
                 utils.progressDialog!!.mode = ProgressDialog.MODE_INDETERMINATE
-                utils.progressDialog!!.setMessage("Verfificando mision...")
+                utils.progressDialog!!.setMessage("Verificando mision...")
                 utils.progressDialog!!.setTitle("")
                 utils.progressDialog!!.show()
 
@@ -236,7 +236,17 @@ class MainActivity : AppCompatActivity() {
         //Editables
 
         /** CAMPOS QUE AUN NO VIENEN EN EL /AUTENTICAR PERO TIENE QUE VENIR MÁS ADLEANTRE **/
-        preferencias.setGlobalData(this, "au_Pais", "0"/*utils.infoAutenticar!!.Pais*/)
+        if (!utils.infoAutenticar!!.Pais.isNullOrBlank() && utils.infoAutenticar!!.Pais.toIntOrNull() != null){
+            /** ES UN NúMERO INT */
+            val pais = utils.infoAutenticar!!.Pais.toInt()
+            preferencias.setGlobalData(this, "au_Pais", pais.toString())
+            if(pais > 6) {
+                preferencias.setGlobalData(this, "au_Pais", "6")
+            }
+        } else {
+            preferencias.setGlobalData(this, "au_Pais", "0")
+        }
+
         preferencias.setGlobalData(this, "au_HoraPos", utils.infoAutenticar!!.FechaPosicionamiento)
         preferencias.setGlobalData(this, "au_HoraSol", utils.infoAutenticar!!.FechaSolicitada)
         preferencias.setGlobalData(this, "au_Lugar", utils.infoAutenticar!!.LugarInicio)
@@ -249,13 +259,14 @@ class MainActivity : AppCompatActivity() {
 
         preferencias.setGlobalData(this, "au_HoraSalida", utils.infoAutenticar!!.FechaSalida)
 
-
-
         preferencias.setGlobalData(this, "au_Tel", utils.infoAutenticar!!.TelefonoPiloto)
+        preferencias.setGlobalData(this, "au_TelTrans", utils.infoAutenticar!!.TelefonoTransporte)
+
         preferencias.setGlobalData(this, "au_Sellado", utils.infoAutenticar!!.Sellado)
         preferencias.setGlobalData(this, "au_Fiscal", utils.infoAutenticar!!.MarchamoFiscal)
         println("au_Fiscal="+utils.infoAutenticar!!.MarchamoFiscal)
         preferencias.setGlobalData(this, "au_Gps", utils.infoAutenticar!!.MarchamoGPS)
+        preferencias.setGlobalData(this, "au_NombreTransporte", utils.infoAutenticar!!.NombreTransporte)
         preferencias.setGlobalData(this, "au_Notas", utils.infoAutenticar!!.Notas)
         //otras
         preferencias.setGlobalData(this, "verM", "false")
