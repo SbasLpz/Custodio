@@ -6,6 +6,8 @@
     <string name="prueba">PRUEBA</string>
     <string name="version">V-3.8.6</string>
     <string name="nFbReceive">0</string>
+    <string name="inxNombramiento">Nombramiento</string>
+    <string name="inxMfiscal">MarchamoFiscal</string>
     <string name="askPermisos">Se necesitan tener los siguientes permisos:\n-Alamcenamiento\n-Ubicación\n-Camara\n-Llamadas\n-Notificaciones\nAjustes -> Aplicaciones -> Comsi Custodio -> Permisos</string>
     <string-array name="your_options_array">
         <item>Ninguno</item>

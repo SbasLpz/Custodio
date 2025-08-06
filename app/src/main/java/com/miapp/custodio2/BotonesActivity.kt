@@ -162,8 +162,9 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
         //Boton de la FOTO
         binding.fotoSpace.setOnClickListener {
             lifecycleScope.launch {
-                //utils.infoFoto = null
-                utils.pickImage(this@BotonesActivity, 4)
+                    //utils.infoFoto = null
+                    utils.pickImage(this@BotonesActivity, 4)
+
             }
         }
 
@@ -199,9 +200,13 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             lifecycleScope.launch {
                 //Si hay foto del marchamo fiscal subirlo sino seguir
                 if(utils.foto != ""){
+
                     //Nuevo objeto tipo Foto
                     val foto = Foto(requestCode,"fotografia", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@BotonesActivity, "TM"))
                     utils.doRequest(foto, this@BotonesActivity)
+
+
+
                     println("FOTOGRAFIA BOTONES: \n"+utils.foto)
                     if (utils.infoFoto != null){
                         if(!utils.infoFoto!!.Success){
@@ -380,6 +385,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         //super.onBackPressed()
         moveTaskToBack(true)
         println("ON BACK PRESSED")
@@ -541,5 +547,25 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
 
         dialog.show()
     }
+//
+//    fun dialogPhotoFinalizar() {
+//        val values = arrayOf(resources.getString(R.string.inxNombramiento), resources.getString(R.string.inxMfiscal))
+//        var selectedIndex = 0
+//        MaterialAlertDialogBuilder(this@BotonesActivity)
+//            .setTitle("Enviar foto")
+//            .setMessage("")
+//            .setSingleChoiceItems(values, selectedIndex) {dialog, which ->
+//                selectedIndex = which
+//            }
+//            .setNeutralButton("Cancelar"){dialog, which ->
+//
+//            }
+//            .setPositiveButton("Subir foto") {dialog, which ->
+//                if (values[selectedIndex] == resources.getString(R.string.inxNombramiento)) {
+//                    utils.pickImage(this@BotonesActivity, 5)
+//                }
+//            }
+//            .show()
+//    }
 
 }

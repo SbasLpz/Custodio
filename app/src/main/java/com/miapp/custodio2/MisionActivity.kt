@@ -193,7 +193,7 @@ class MisionActivity : AppCompatActivity() {
         }
 
         //Obtiene la Direccion de Enrtrega
-        lifecycleScope.launch {7
+        lifecycleScope.launch {
             if(preferencias.getGlobalData(this@MisionActivity, "Sesion") == "primera"){
                 val envio = Envio(preferencias.getGlobalData(this@MisionActivity, "TM"))
                 utils.getDireccion(envio, this@MisionActivity)
@@ -427,6 +427,16 @@ class MisionActivity : AppCompatActivity() {
             it.contains(getAuTel("au_Tel")["cod"].toString())
         }
         binding.spinnerCountry2.setSelection(indexSpinnerTel)
+
+        /** 22/06/2025 MOD: cuando venga el tel no editar el campo si no viene que lo puedean digitar **/
+        if(getAuTel("au_Tel")["num"].toString().trim() != "" && getAuTel("au_Tel")["num"].toString().trim() != "0") {
+            binding.etTelefonoPiloto.isEnabled = false
+            binding.spinnerCountry2.isEnabled = false
+        } else {
+            //El resto como ya estaba
+        }
+
+
         //binding.etTelTransportista.setText(preferencias.getGlobalData(this, "au_TelTrans"))
         binding.etTelTransportista.setText(getAuTel("au_TelTrans")["num"])
         val indexSpinnerTelTrans = resources.getStringArray(R.array.codsPais).indexOfFirst {
@@ -441,6 +451,11 @@ class MisionActivity : AppCompatActivity() {
         }
 
         binding.etMarchamoFiscal.setText(preferencias.getGlobalData(this, "au_Fiscal"))
+        /** 22/06/2025 MOD: cuando venga el marchamo fiscal no editar el campo si no viene que lo puedean digitar **/
+        if (preferencias.getGlobalData(this, "au_Fiscal").trim() != "" && preferencias.getGlobalData(this, "au_Fiscal").trim() != "0") {
+            binding.etMarchamoFiscal.isEnabled = false
+        }
+
         binding.etHoraPos.setText(preferencias.getGlobalData(this, "au_HoraPos"))
         binding.etHoraSolicitada.setText(preferencias.getGlobalData(this, "au_HoraSol"))
         binding.etHoraSalida.setText(preferencias.getGlobalData(this, "au_HoraSalida"))
@@ -490,6 +505,15 @@ class MisionActivity : AppCompatActivity() {
             }
             binding.spinnerCountry2.setSelection(indexSpinner2)
 
+            /** 22/06/2025 MOD: cuando venga el tel no editar el campo si no viene que lo puedean digitar **/
+            if(getAuTel("au_Tel")["num"].toString().trim() != "" && getAuTel("au_Tel")["num"].toString().trim() != "0") {
+                binding.etTelefonoPiloto.isEnabled = false
+                binding.spinnerCountry2.isEnabled = false
+            } else {
+                //El resto como ya estaba
+            }
+
+
             binding.etTelTransportista.setText(getAuTel("au_TelTrans")["num"])
             val indexSpinner3 = resources.getStringArray(R.array.codsPais).indexOfFirst {
                 it.contains(getAuTel("au_TelTrans")["cod"].toString())
@@ -500,6 +524,12 @@ class MisionActivity : AppCompatActivity() {
             binding.etHoraContacto.setText(preferencias.getGlobalData(this, "au_HoraContacto"))
 
             binding.etMarchamoFiscal.setText(preferencias.getGlobalData(this, "au_Fiscal"))
+            /** 22/06/2025 MOD: cuando venga el marchamo fiscal no editar el campo si no viene que lo puedean digitar **/
+            if (preferencias.getGlobalData(this, "au_Fiscal").trim() != "" && preferencias.getGlobalData(this, "au_Fiscal").trim() != "0") {
+                binding.etMarchamoFiscal.isEnabled = false
+            }
+
+
             binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_NombreTransporte"))
             binding.etNotas.setText(preferencias.getGlobalData(this, "au_Notas"))
             when(preferencias.getGlobalData(this, "au_Sellado")){
