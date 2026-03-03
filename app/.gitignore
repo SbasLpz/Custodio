@@ -1,3 +1,4 @@
 /build
 src/main/res/values/strings.xml
 src/main/AndroidManifest.xml
+src/google-services.json
