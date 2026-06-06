@@ -35,6 +35,7 @@ import com.google.gson.JsonParser
 import com.miapp.custodio2.BotonesActivity
 import com.miapp.custodio2.ClasesRequest.*
 import com.techiness.progressdialoglibrary.ProgressDialog
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
@@ -553,9 +554,6 @@ class RequestPermissions() {
 
     suspend fun autenticar(datos: Inicio, act: Activity){
         try {
-//            val okHttpClient = OkHttpClient.Builder()
-//                .connectTimeout(1, TimeUnit.MILLISECONDS) // Tiempo de espera de 1 milisegundo
-//                .build()
             val retrofit = Retrofit.Builder()
                 .baseUrl(act.getString(com.miapp.custodio2.R.string.UrlBase))
                 .build()
@@ -1319,6 +1317,30 @@ class RequestPermissions() {
         }
         return false
     }
+
+
+
+    suspend fun showWaiterDialog (act: Activity, titulo: String, mensaje:String) : Boolean = suspendCancellableCoroutine { continuation ->
+        MaterialAlertDialogBuilder(act)
+            .setTitle(titulo)
+            .setMessage(mensaje)
+            .setPositiveButton("Continuar") { dialog, _ ->
+                dialog.dismiss()
+                // Si la corrutina sigue activa, reanudamos devolviendo 'true'
+                if (continuation.isActive) continuation.resume(true) {}
+            }
+            .setNegativeButton("Regresar") { dialog, _ ->
+                dialog.dismiss()
+                // Reanudamos devolviendo 'false'
+                if (continuation.isActive) continuation.resume(false) {}
+            }
+            .setCancelable(false)
+            .setOnCancelListener {
+                if (continuation.isActive) continuation.resume(false) {}
+            }
+            .show()
+    }
+
 
 
 }

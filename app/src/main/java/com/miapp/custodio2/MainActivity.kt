@@ -232,6 +232,7 @@ class MainActivity : AppCompatActivity() {
         preferencias.setGlobalData(this@MainActivity, "au_Tc", utils.infoAutenticar!!.PlacaTC)
         preferencias.setGlobalData(this, "au_Contenedor", utils.infoAutenticar!!.NumeroContenedor)
         preferencias.setGlobalData(this@MainActivity, "au_Piloto", utils.infoAutenticar!!.Piloto)
+        preferencias.setGlobalData(this@MainActivity, "au_Directriz", utils.infoAutenticar!!.Directriz)
         preferencias.setGlobalData(this, "au_Arma", utils.infoAutenticar!!.Escopeta)
         //Editables
 

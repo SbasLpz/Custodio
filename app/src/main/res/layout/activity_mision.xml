@@ -206,7 +206,6 @@
             android:id="@+id/ivFotoCabezal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_photo_camera"
             android:layout_marginEnd="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"
@@ -290,11 +289,41 @@
             android:textColor="@color/black"
             android:textSize="15sp"
             android:enabled="false"
-            app:layout_constraintBottom_toTopOf="@id/tvRecordatorio"
             app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
             app:layout_constraintStart_toStartOf="@id/tvNombrePiloto"
             app:layout_constraintTop_toBottomOf="@id/tvNombrePiloto"
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
+
+
+        <TextView
+            android:id="@+id/tvDirectriz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Directriz"
+            android:textColor="@color/black"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvDatosObligatorios"
+            app:layout_constraintTop_toBottomOf="@id/etNombrePiloto"
+            />
+
+        <TextView
+            android:id="@+id/etDirectriz"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:text="No hay información."
+            android:scrollbars="vertical"
+            android:inputType="textMultiLine"
+            android:gravity="top"
+            android:background="@drawable/et_border_mision_style"
+            android:backgroundTint="@color/divisor_line_color"
+            app:layout_constraintStart_toStartOf="@id/tvNombrePiloto"
+            app:layout_constraintEnd_toEndOf="@id/etPlacaCabezal"
+            app:layout_constraintBottom_toTopOf="@id/tvRecordatorio"
+            app:layout_constraintTop_toBottomOf="@id/tvDirectriz"
+            />
 
         <TextView
             android:id="@+id/tvRecordatorio"
@@ -306,20 +335,20 @@
             android:text="@string/recordatorio"
             android:textSize="12sp"
             android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@id/etNombrePiloto"
+            app:layout_constraintTop_toBottomOf="@id/etDirectriz"
             app:layout_constraintStart_toStartOf="@id/etNombrePiloto"
             app:layout_constraintEnd_toEndOf="@id/etNombrePiloto"/>
 
-        <ImageView
-            android:id="@+id/ivMarchamoFiscalFoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_photo_camera"
-            app:layout_constraintBottom_toBottomOf="@id/etMarchamoFiscal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/etMarchamoFiscal"
-            android:layout_marginEnd="30dp"
-            tools:layout_editor_absoluteX="362dp" />
+<!--        <ImageView-->
+<!--            android:id="@+id/ivMarchamoFiscalFoto"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/ic_photo_camera"-->
+<!--            app:layout_constraintBottom_toBottomOf="@id/etMarchamoFiscal"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@id/etMarchamoFiscal"-->
+<!--            android:layout_marginEnd="30dp"-->
+<!--            tools:layout_editor_absoluteX="362dp" />-->
 
         <TextView
             android:id="@+id/tvDatosPorAgregar"
@@ -527,7 +556,7 @@
             android:scrollHorizontally="true"
             android:maxLines="1"
             android:enabled="true"
-            app:layout_constraintEnd_toStartOf="@id/ivMarchamoFiscalFoto"
+            app:layout_constraintEnd_toEndOf="@id/etNombreTransportista"
             app:layout_constraintStart_toStartOf="@id/tvMarchamoFiscal"
             app:layout_constraintTop_toBottomOf="@id/tvMarchamoFiscal"
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
@@ -788,7 +817,7 @@
             android:id="@+id/etNotas"
             android:layout_width="0dp"
             android:layout_height="150dp"
-            android:inputType="text|textMultiLine"
+            android:inputType="textMultiLine"
             android:gravity="top"
             android:background="@drawable/et_border_mision_style"
             android:backgroundTint="@color/suave_black_1"
@@ -799,6 +828,153 @@
             app:layout_constraintTop_toBottomOf="@id/tvNotas"
             app:layout_constraintEnd_toEndOf="parent"
             />
+
+        <LinearLayout
+            android:id="@+id/linearFotos"
+            app:layout_constraintTop_toBottomOf="@id/etNotas"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/linearCabezal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/robotobold"
+                    android:text="Foto Cabezal"
+                    android:textColor="@color/act_mision_text" />
+
+                <ImageView
+                    android:id="@+id/ivNewFotoCabezal"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/ic_photo_camera"
+                    app:layout_constraintBottom_toBottomOf="@id/etPlacaCabezal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"
+                    tools:layout_editor_absoluteX="362dp" />
+
+                <ImageView
+                    android:id="@+id/ivCabezalPreview"
+                    android:layout_width="85dp"
+                    android:layout_height="85dp"
+                    android:background="@drawable/et_border_mision_style"
+                    android:src="@drawable/cab"
+                    app:layout_constraintBottom_toBottomOf="@id/etPlacaCabezal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"
+                    tools:layout_editor_absoluteX="362dp" />
+
+                <ImageView
+                    android:id="@+id/ivDeleteCabezalPic"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/remove" />
+            </LinearLayout>
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="match_parent"/>
+
+
+            <LinearLayout
+                android:id="@+id/linearCola"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Foto Cola"
+                    android:fontFamily="@font/robotobold"
+                    android:textColor="@color/act_mision_text"
+                    />
+                <ImageView
+                    android:id="@+id/ivFotoCola"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/ic_photo_camera"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"
+                    app:layout_constraintBottom_toBottomOf="@id/etPlacaCabezal"
+                    tools:layout_editor_absoluteX="362dp" />
+                <ImageView
+                    android:id="@+id/ivColaPreview"
+                    android:layout_width="85dp"
+                    android:layout_height="85dp"
+                    android:background="@drawable/et_border_mision_style"
+                    android:src="@drawable/hauler"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"
+                    app:layout_constraintBottom_toBottomOf="@id/etPlacaCabezal"
+                    tools:layout_editor_absoluteX="362dp" />
+                <ImageView
+                    android:id="@+id/ivDeleteColaPic"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/remove"
+                    android:layout_marginTop="12dp"
+                    />
+            </LinearLayout>
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="match_parent"/>
+
+
+            <LinearLayout
+                android:id="@+id/linearMarFiscal"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Foto M. Fiscal"
+                    android:fontFamily="@font/robotobold"
+                    android:textColor="@color/act_mision_text"
+                    />
+                <ImageView
+                    android:id="@+id/ivFotoMarFiscal"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/ic_photo_camera"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"
+                    app:layout_constraintBottom_toBottomOf="@id/etPlacaCabezal"
+                    tools:layout_editor_absoluteX="362dp" />
+                <ImageView
+                    android:id="@+id/ivMarFiscalPreview"
+                    android:layout_width="85dp"
+                    android:layout_height="85dp"
+                    android:background="@drawable/et_border_mision_style"
+                    android:src="@drawable/trailer"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/etPlacaCabezal"
+                    app:layout_constraintBottom_toBottomOf="@id/etPlacaCabezal"
+                    tools:layout_editor_absoluteX="362dp" />
+                <ImageView
+                    android:id="@+id/ivDeleteMarFiscalPic"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/remove"
+                    android:layout_marginTop="12dp"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSiguiente"
@@ -816,7 +992,7 @@
             android:layout_marginTop="@dimen/margin_subTxt_mision_top"
             android:layout_marginBottom="@dimen/margin_subTxt_mision_top"
             app:cornerRadius="30dp"
-            app:layout_constraintTop_toBottomOf="@id/etNotas"
+            app:layout_constraintTop_toBottomOf="@id/linearFotos"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

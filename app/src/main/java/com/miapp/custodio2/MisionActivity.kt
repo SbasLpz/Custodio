@@ -8,10 +8,12 @@ import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TimePicker
 import android.widget.Toast
@@ -32,6 +34,10 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.google.gson.Gson
+import com.miapp.custodio2.ClasesRequest.Models.Photo
+import com.miapp.custodio2.ClasesRequest.Models.TypePhoto
+import com.miapp.custodio2.Utils.FotosManager
 import com.miapp.custodio2.Utils.LocationService
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -63,6 +69,8 @@ class MisionActivity : AppCompatActivity() {
 
     var horaContacto = "indefinido"
     var codsPais = arrayOf("", "502", "503", "504", "505", "506", "507")
+
+    val fotosManager = FotosManager()
     //var progressDialog2: android.app.ProgressDialog? = null
     //Progress dialog
     //private lateinit var progressDialog: ProgressDialog
@@ -72,6 +80,18 @@ class MisionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMisionBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // ... después de configurar los spinners en onCreate
+        binding.etDirectriz.movementMethod = ScrollingMovementMethod()
+        binding.etDirectriz.setOnTouchListener { v, event ->
+            if (v.id == R.id.etDirectriz) {
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                when (event.action and android.view.MotionEvent.ACTION_MASK) {
+                    android.view.MotionEvent.ACTION_UP -> v.parent.requestDisallowInterceptTouchEvent(false)
+                }
+            }
+            false
+        }
 
         spinner = binding.spinner
         adapterSpinner = ArrayAdapter.
@@ -209,13 +229,40 @@ class MisionActivity : AppCompatActivity() {
             }
         }
 
-        binding.ivMarchamoFiscalFoto.setOnClickListener {
+//        binding.ivMarchamoFiscalFoto.setOnClickListener {
+//            utils.pickImage(this, 2)
+//            //progressDialog.show()
+//        }
+
+//        binding.ivFotoCabezal.setOnClickListener {
+//            utils.pickImage(this, 3)
+//        }
+
+        binding.ivFotoMarFiscal.setOnClickListener {
             utils.pickImage(this, 2)
             //progressDialog.show()
         }
 
-        binding.ivFotoCabezal.setOnClickListener {
+        binding.ivNewFotoCabezal.setOnClickListener {
             utils.pickImage(this, 3)
+        }
+
+        binding.ivFotoCola.setOnClickListener {
+            utils.pickImage(this, 4)
+        }
+
+
+        binding.ivDeleteColaPic.setOnClickListener {
+            fotosManager.assignPhoto(TypePhoto.COLA, null)
+            binding.ivColaPreview.setImageResource(R.drawable.hauler)
+        }
+        binding.ivDeleteCabezalPic.setOnClickListener {
+            fotosManager.assignPhoto(TypePhoto.CABEZAL, null)
+            binding.ivCabezalPreview.setImageResource(R.drawable.cab)
+        }
+        binding.ivDeleteMarFiscalPic.setOnClickListener {
+            fotosManager.assignPhoto(TypePhoto.MARCHAMO, null)
+            binding.ivMarFiscalPreview.setImageResource(R.drawable.trailer)
         }
 
         //FIN - Obtiene la Direccion de Enrtrega
@@ -223,23 +270,116 @@ class MisionActivity : AppCompatActivity() {
             println("♦♦♦♦ ♦♦♦ ♦♦ ♦ tel Transporte ${codPiloto}")
 
             println("******* btnSiguiente - SELECTED del Spinner: ${selectedSpinner} ********")
+
             try {
-                /*utils.stopLocationUpdates()*/
-                /*runBlocking {*/
-                //showDialog()
-                utils.progressDialog = ProgressDialog(this)
-                utils.progressDialog!!.theme = ProgressDialog.THEME_LIGHT
-                utils.progressDialog!!.mode = ProgressDialog.MODE_INDETERMINATE
-                utils.progressDialog!!.setMessage("Cargando...")
-                utils.progressDialog!!.setTitle("")
-                utils.progressDialog!!.show()
-                Codigo2()
+                var messages = mutableListOf<String>()
+                lifecycleScope.launch{
+                    if (!esPrimeraVez) {
+                        print("Esto solo se ejecuta si no es primera vez aaa")
+                        val pics = fotosManager.photosList()
+                        print("Pics are: ${pics.toList()}")
+                        for (photo in pics) {
+                            if (photo != null) {
+                                utils.doRequest(photo.fotoReq, this@MisionActivity)
+
+                                if (utils.infoFoto != null){
+                                    if(!utils.infoFoto!!.Success){
+                                        Toast.makeText(this@MisionActivity, "No se pudo subir la foto", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@MisionActivity, utils.infoFoto!!.Message, Toast.LENGTH_LONG).show()
+
+                                        println("ERROR: "+utils.infoFoto!!.Message)
+                                        utils.progressDialog!!.dismiss()
+
+                                        val msgerror = utils.infoFoto?.Message ?: "Error Desconocido."
+                                        messages.add("❌ La foto ${photo.tipo} NO se pudo subir: \n${msgerror}")
+                                    } else {
+                                        messages.add("✔ La foto ${photo.tipo} se subio con exito.")
+                                        //binding.etMarchamoFiscal.setText("--- Foto subida con exito ---")
+                                        Toast.makeText(this@MisionActivity, "Foto subida con exito", Toast.LENGTH_SHORT).show()
+                                        utils.progressDialog!!.dismiss()
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    utils.foto = ""
+                    var blockExec = false
+                    if(!esPrimeraVez){
+
+                        var seguir = true
+                        if (messages.isNotEmpty()){
+                            seguir = utils.showWaiterDialog(this@MisionActivity,
+                                "Operación subida de imagenes",
+                                messages.joinToString("\n\n")
+                            )
+                        }
+
+                        if(!seguir) {
+                            blockExec = true
+                        } else {
+                            //Continuar con el resto del código
+                            fotosManager.clearAllPhotos()
+                        }
+//                        MaterialAlertDialogBuilder(this@MisionActivity)
+//                            .setTitle("Operación subida de imagenes")
+//                            .setMessage()
+//                            .setPositiveButton("Continuar") { dialog, which ->
+//                                dialog.dismiss()
+//                            }
+//                            .setNegativeButton("Salir"){ dialog, which ->
+//                                blockExec = true
+//                                dialog.dismiss()
+//                            }
+//                            .setCancelable(false)
+//                            .show()
+                    }
+
+                    if (blockExec) { return@launch }
+
+                    print("Resto del cod del btnsiguiente onclick.")
+                    try {
+                        /*utils.stopLocationUpdates()*/
+                        /*runBlocking {*/
+                        //showDialog()
+                        utils.progressDialog = ProgressDialog(this@MisionActivity)
+                        utils.progressDialog!!.theme = ProgressDialog.THEME_LIGHT
+                        utils.progressDialog!!.mode = ProgressDialog.MODE_INDETERMINATE
+                        utils.progressDialog!!.setMessage("Cargando...")
+                        utils.progressDialog!!.setTitle("")
+                        utils.progressDialog!!.show()
+                        Codigo2()
+
+                    } catch (e: Exception){
+                        utils.progressDialog!!.dismiss()
+                        binding.btnSiguiente.isEnabled = true
+                        Toast.makeText(this@MisionActivity, "Algo salio mal: long"+utils.longitude+" lat: "+utils.latitude, Toast.LENGTH_LONG).show()
+                    }
+
+                }
 
             } catch (e: Exception){
-                utils.progressDialog!!.dismiss()
-                binding.btnSiguiente.isEnabled = true
-                Toast.makeText(this, "Algo salio mal: long"+utils.longitude+" lat: "+utils.latitude, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Algo salio mal al subir las imagenes: \n${e.message}", Toast.LENGTH_LONG).show()
             }
+
+
+//            try {
+//                /*utils.stopLocationUpdates()*/
+//                /*runBlocking {*/
+//                //showDialog()
+//                utils.progressDialog = ProgressDialog(this)
+//                utils.progressDialog!!.theme = ProgressDialog.THEME_LIGHT
+//                utils.progressDialog!!.mode = ProgressDialog.MODE_INDETERMINATE
+//                utils.progressDialog!!.setMessage("Cargando...")
+//                utils.progressDialog!!.setTitle("")
+//                utils.progressDialog!!.show()
+//                Codigo2()
+//
+//            } catch (e: Exception){
+//                utils.progressDialog!!.dismiss()
+//                binding.btnSiguiente.isEnabled = true
+//                Toast.makeText(this, "Algo salio mal: long"+utils.longitude+" lat: "+utils.latitude, Toast.LENGTH_LONG).show()
+//            }
 
         }
 
@@ -328,17 +468,72 @@ class MisionActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK){
             val uri: Uri = data?.data!!
+            //var jsonData = Gson().toJson(data.data)
+            //println("Photo Data is: "+data.data)
 
             //println("SIZE URI: "+uri.toString())
             //println("SIZE URI: "+uri.toFile())
 
             utils.foto = utils.converToBase64(this, uri)
 
+            if(requestCode == 2){
+                binding.ivMarFiscalPreview.setImageURI(uri)
+                binding.ivMarFiscalPreview.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+            if(requestCode == 3){
+                binding.ivCabezalPreview.setImageURI(uri)
+                binding.ivCabezalPreview.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+            if(requestCode == 4){
+                binding.ivColaPreview.setImageURI(uri)
+                binding.ivColaPreview.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+
             lifecycleScope.launch {
                 //Si hay foto del marchamo fiscal subirlo sino seguir
 
+
                 utils.progressDialog!!.dismiss()
                 if(utils.foto != ""){
+                    //new
+                    if (!esPrimeraVez){
+                        if (requestCode == 2){
+                            val foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val photo = Photo(TypePhoto.MARCHAMO, uri, foto)
+
+                            fotosManager.assignPhoto(TypePhoto.MARCHAMO, photo)
+                        } else if (requestCode == 3){
+                            val foto = Foto(requestCode, "Cabezal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val photo = Photo(TypePhoto.CABEZAL, uri, foto)
+
+                            fotosManager.assignPhoto(TypePhoto.CABEZAL, photo)
+                        } else if (requestCode == 4) {
+                            val foto = Foto(requestCode, "Cola", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val photo = Photo(TypePhoto.COLA, uri, foto)
+
+                            fotosManager.assignPhoto(TypePhoto.COLA, photo)
+                        }
+                    } else {
+                        //var foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+
+                        if (requestCode == 2){
+                            val foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val photo = Photo(TypePhoto.MARCHAMO, uri, foto)
+                            fotosManager.assignPhoto(TypePhoto.MARCHAMO, photo)
+                        } else if (requestCode == 3){
+                            val foto = Foto(requestCode, "Cabezal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val photo = Photo(TypePhoto.CABEZAL, uri, foto)
+                            fotosManager.assignPhoto(TypePhoto.CABEZAL, photo)
+                        } else if (requestCode == 4) {
+                            val foto = Foto(requestCode, "Cola", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val photo = Photo(TypePhoto.COLA, uri, foto)
+                            fotosManager.assignPhoto(TypePhoto.COLA, photo)
+                        }
+                        //utils.listOfFotos.add(foto)
+
+                    }
+
+                    return@launch
                     //Nuevo objeto tipo Foto
                         /** En ves de Accion, ahora el requestCode trae el ID del tipo de foto: 2 es de MarchamoFiscal y 3 la del Cabezal**/
                     //val foto = Foto("MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
@@ -417,6 +612,7 @@ class MisionActivity : AppCompatActivity() {
         binding.etPlacaTC.setText(preferencias.getGlobalData(this, "au_Tc"))
         binding.etNumContenedor.setText(preferencias.getGlobalData(this, "au_Contenedor"))
         binding.etNombrePiloto.setText(preferencias.getGlobalData(this, "au_Piloto"))
+        binding.etDirectriz.setText(preferencias.getGlobalData(this, "au_Directriz"))
         binding.etNumArma.setText(preferencias.getGlobalData(this, "au_Arma"))
 
         spinner.setSelection(preferencias.getGlobalData(this, "au_Pais").toInt())
@@ -1015,8 +1211,9 @@ class MisionActivity : AppCompatActivity() {
         val info: MisionRes = utils.infoMision!!
 
         if (info.Success){
+            val listaFotos = fotosManager.photosToFotoList()
 
-            utils.subirListFotos(utils.listOfFotos, this)
+            utils.subirListFotos(listaFotos, this)
             //progressDialog2!!.dismiss()
             esPrimeraVez = false
             utils.progressDialog!!.dismiss()
