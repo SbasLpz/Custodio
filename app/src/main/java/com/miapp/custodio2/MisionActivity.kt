@@ -1037,7 +1037,7 @@ class MisionActivity : AppCompatActivity() {
         //DescripcionCabezal
         if (binding.etDescripcionCabezal.text.toString() != preferencias.getGlobalData(this, "DescripcionCabezal")){
             //Update request
-            val update = Update("DESCRIPCIONCABEZAL", preferencias.getGlobalData(this, "DescripcionCabezal"), binding.etDescripcionCabezal.text.toString(), utils.latitude,
+            val update = Update("DescripcionCabezal", preferencias.getGlobalData(this, "DescripcionCabezal"), binding.etDescripcionCabezal.text.toString(), utils.latitude,
                 utils.longitude, preferencias.getGlobalData(this, "TM"))
 
             utils.doRequest(update, this)
@@ -1209,7 +1209,7 @@ class MisionActivity : AppCompatActivity() {
         //DESC. CABEZAL
         if (binding.etDescripcionCabezal.text.toString() != preferencias.getGlobalData(this, "au_DescripcionCabezal")){
             //Update request
-            val update = Update("DESCRIPCIONCABEZAL", preferencias.getGlobalData(this, "au_DescripcionCabezal"), binding.etDescripcionCabezal.text.toString(), utils.latitude,
+            val update = Update("DescripcionCabezal", preferencias.getGlobalData(this, "au_DescripcionCabezal"), binding.etDescripcionCabezal.text.toString(), utils.latitude,
                 utils.longitude, preferencias.getGlobalData(this, "TM"))
 
             utils.doRequest(update, this)
