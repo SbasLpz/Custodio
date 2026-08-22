@@ -229,6 +229,43 @@ class MisionActivity : AppCompatActivity() {
             }
         }
 
+        //Obtiene Convoy
+        lifecycleScope.launch {
+            if(preferencias.getGlobalData(this@MisionActivity, "Sesion") == "primera"){
+                val convoy = Convoy(preferencias.getGlobalData(this@MisionActivity, "TM"), preferencias.getGlobalData(this@MisionActivity, "CODIGO").toInt())
+                utils.getConvoyData(convoy, this@MisionActivity)
+
+                if(utils.infoConvoy != null){
+                    val convoyData = utils.infoConvoy!!.Data;
+                    var textoConvoy = "";
+
+                    if (convoyData.size > 0) {
+
+                        for (c in convoyData) {
+                            textoConvoy += """
+                                Nombre: ${c.Nombre}
+                                Tipo Servicio: ${c.TipoServicio}
+                                Tel. Red: ${c.TelefonoRed}
+                                Tel: ${c.Telefono}
+                                
+                            """.trimIndent()
+                        }
+                        binding.etConvoy.setText(textoConvoy)
+                    } else {
+                        textoConvoy = "No hay datos de Convoy.";
+                        binding.etConvoy.setText(textoConvoy)
+                    }
+
+                    preferencias.setGlobalData(this@MisionActivity, "convoy_text", textoConvoy)
+                } else {
+                    binding.tvMostrarDireccion.setText("Error de resolución de host: "+getString(R.string.UrlBase))
+                }
+            } else {
+                val convoy = preferencias.getGlobalData(this@MisionActivity, "convoy_text")
+                binding.etConvoy.setText(convoy)
+            }
+        }
+
 //        binding.ivMarchamoFiscalFoto.setOnClickListener {
 //            utils.pickImage(this, 2)
 //            //progressDialog.show()
@@ -498,17 +535,17 @@ class MisionActivity : AppCompatActivity() {
                     //new
                     if (!esPrimeraVez){
                         if (requestCode == 2){
-                            val foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val foto = Foto(preferencias.getGlobalData(this@MisionActivity, "TM"), "MarchamoFiscal", utils.latitude, utils.longitude, utils.foto, 2)
                             val photo = Photo(TypePhoto.MARCHAMO, uri, foto)
 
                             fotosManager.assignPhoto(TypePhoto.MARCHAMO, photo)
                         } else if (requestCode == 3){
-                            val foto = Foto(requestCode, "Cabezal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val foto = Foto(preferencias.getGlobalData(this@MisionActivity, "TM"), "Cabezal", utils.latitude, utils.longitude, utils.foto, 3)
                             val photo = Photo(TypePhoto.CABEZAL, uri, foto)
 
                             fotosManager.assignPhoto(TypePhoto.CABEZAL, photo)
                         } else if (requestCode == 4) {
-                            val foto = Foto(requestCode, "Cola", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val foto = Foto(preferencias.getGlobalData(this@MisionActivity, "TM"), "Cola", utils.latitude, utils.longitude, utils.foto, 6)
                             val photo = Photo(TypePhoto.COLA, uri, foto)
 
                             fotosManager.assignPhoto(TypePhoto.COLA, photo)
@@ -517,15 +554,15 @@ class MisionActivity : AppCompatActivity() {
                         //var foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
 
                         if (requestCode == 2){
-                            val foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val foto = Foto(preferencias.getGlobalData(this@MisionActivity, "TM"), "MarchamoFiscal", utils.latitude, utils.longitude, utils.foto, 2)
                             val photo = Photo(TypePhoto.MARCHAMO, uri, foto)
                             fotosManager.assignPhoto(TypePhoto.MARCHAMO, photo)
                         } else if (requestCode == 3){
-                            val foto = Foto(requestCode, "Cabezal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val foto = Foto(preferencias.getGlobalData(this@MisionActivity, "TM"), "Cabezal", utils.latitude, utils.longitude, utils.foto, 3)
                             val photo = Photo(TypePhoto.CABEZAL, uri, foto)
                             fotosManager.assignPhoto(TypePhoto.CABEZAL, photo)
                         } else if (requestCode == 4) {
-                            val foto = Foto(requestCode, "Cola", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+                            val foto = Foto(preferencias.getGlobalData(this@MisionActivity, "TM"), "Cola", utils.latitude, utils.longitude, utils.foto, 6)
                             val photo = Photo(TypePhoto.COLA, uri, foto)
                             fotosManager.assignPhoto(TypePhoto.COLA, photo)
                         }
@@ -534,57 +571,57 @@ class MisionActivity : AppCompatActivity() {
                     }
 
                     return@launch
-                    //Nuevo objeto tipo Foto
-                        /** En ves de Accion, ahora el requestCode trae el ID del tipo de foto: 2 es de MarchamoFiscal y 3 la del Cabezal**/
-                    //val foto = Foto("MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
-                    var foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
-                    if(requestCode == 3){
-                        foto = Foto(requestCode, "Cabezal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
-                    } else if (requestCode == 2){
-                        foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
-                    }
-
-
-                    println("DATOS QUE SE ENVIAN")
-                    //utils.doRequest(foto, this@MisionActivity)
-                    println("Id: "+requestCode)
-                    println("Accion: MarchamoFiscal")
-                    println("Fecha: "+utils.getCurrentDate())
-
-                    println("Latitud: "+utils.latitude)
-                    println("Longitud: "+utils.latitude)
-                    println("Token: "+preferencias.getGlobalData(this@MisionActivity, "TM"))
-                    println("Foto: \n"+utils.foto)
-
-                    if (esPrimeraVez){
-                        /** Se agregar la foto al Array y luego se suben todas en primeraSesion() **/
-                        utils.listOfFotos.add(foto)
-                        println("PRIMERA EN MISION")
-                    } else {
-                        println("YA NO ES PRIMERA EN MISION")
-                        utils.doRequest(foto, this@MisionActivity)
-
-                        if (utils.infoFoto != null){
-                            if(!utils.infoFoto!!.Success){
-                                Toast.makeText(this@MisionActivity, "No se pudo subir la foto", Toast.LENGTH_SHORT).show()
-                                Toast.makeText(this@MisionActivity, utils.infoFoto!!.Message, Toast.LENGTH_LONG).show()
-
-                                /** MOSTRAR EL ERROR DE LA FOTO **/
-                                binding.etNotas.isFocusableInTouchMode = true
-                                binding.etNotas.isFocusable = true
-                                binding.etNotas.setText(utils.infoFoto!!.Message)
-
-                                println("ERROR: "+utils.infoFoto!!.Message)
-                                utils.progressDialog!!.dismiss()
-                            } else {
-                                //binding.etMarchamoFiscal.setText("--- Foto subida con exito ---")
-                                Toast.makeText(this@MisionActivity, "Foto subida con exito", Toast.LENGTH_SHORT).show()
-                                utils.progressDialog!!.dismiss()
-                            }
-                        }
-
-                    }
-                    utils.foto = ""
+//                    //Nuevo objeto tipo Foto
+//                        /** En ves de Accion, ahora el requestCode trae el ID del tipo de foto: 2 es de MarchamoFiscal y 3 la del Cabezal**/
+//                    //val foto = Foto("MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+//                    var foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+//                    if(requestCode == 3){
+//                        foto = Foto(requestCode, "Cabezal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+//                    } else if (requestCode == 2){
+//                        foto = Foto(requestCode, "MarchamoFiscal", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@MisionActivity, "TM"))
+//                    }
+//
+//
+//                    println("DATOS QUE SE ENVIAN")
+//                    //utils.doRequest(foto, this@MisionActivity)
+//                    println("Id: "+requestCode)
+//                    println("Accion: MarchamoFiscal")
+//                    println("Fecha: "+utils.getCurrentDate())
+//
+//                    println("Latitud: "+utils.latitude)
+//                    println("Longitud: "+utils.latitude)
+//                    println("Token: "+preferencias.getGlobalData(this@MisionActivity, "TM"))
+//                    println("Foto: \n"+utils.foto)
+//
+//                    if (esPrimeraVez){
+//                        /** Se agregar la foto al Array y luego se suben todas en primeraSesion() **/
+//                        utils.listOfFotos.add(foto)
+//                        println("PRIMERA EN MISION")
+//                    } else {
+//                        println("YA NO ES PRIMERA EN MISION")
+//                        utils.doRequest(foto, this@MisionActivity)
+//
+//                        if (utils.infoFoto != null){
+//                            if(!utils.infoFoto!!.Success){
+//                                Toast.makeText(this@MisionActivity, "No se pudo subir la foto", Toast.LENGTH_SHORT).show()
+//                                Toast.makeText(this@MisionActivity, utils.infoFoto!!.Message, Toast.LENGTH_LONG).show()
+//
+//                                /** MOSTRAR EL ERROR DE LA FOTO **/
+//                                binding.etNotas.isFocusableInTouchMode = true
+//                                binding.etNotas.isFocusable = true
+//                                binding.etNotas.setText(utils.infoFoto!!.Message)
+//
+//                                println("ERROR: "+utils.infoFoto!!.Message)
+//                                utils.progressDialog!!.dismiss()
+//                            } else {
+//                                //binding.etMarchamoFiscal.setText("--- Foto subida con exito ---")
+//                                Toast.makeText(this@MisionActivity, "Foto subida con exito", Toast.LENGTH_SHORT).show()
+//                                utils.progressDialog!!.dismiss()
+//                            }
+//                        }
+//
+//                    }
+//                    utils.foto = ""
                 }
             }
 
@@ -661,6 +698,7 @@ class MisionActivity : AppCompatActivity() {
         binding.etMarchamoGps.setText(preferencias.getGlobalData(this, "au_Gps"))
         binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_NombreTransporte"))
         binding.etNotas.setText(preferencias.getGlobalData(this, "au_Notas"))
+        binding.etDescripcionCabezal.setText(preferencias.getGlobalData(this, "au_DescripcionCabezal"))
 
         val testval2 = preferencias.getGlobalData(this, "au_HoraContacto")
 
@@ -728,6 +766,7 @@ class MisionActivity : AppCompatActivity() {
 
             binding.etNombreTransportista.setText(preferencias.getGlobalData(this, "au_NombreTransporte"))
             binding.etNotas.setText(preferencias.getGlobalData(this, "au_Notas"))
+            binding.etDescripcionCabezal.setText(preferencias.getGlobalData(this, "au_DescripcionCabezal"))
             when(preferencias.getGlobalData(this, "au_Sellado")){
                 "" -> binding.rbSelladoMarchamo.isChecked = true
                 "Candado" -> binding.rbSelladoCandado.isChecked = true
@@ -805,6 +844,9 @@ class MisionActivity : AppCompatActivity() {
         if (binding.etNotas.text.toString() != preferencias.getGlobalData(this, "Notas")){
             binding.etNotas.setText(preferencias.getGlobalData(this, "Notas"))
         }
+        if (binding.etDescripcionCabezal.text.toString() != preferencias.getGlobalData(this, "DescripcionCabezal")){
+            binding.etDescripcionCabezal.setText(preferencias.getGlobalData(this, "DescripcionCabezal"))
+        }
         if (sellado != preferencias.getGlobalData(this, "Sellado")){
             if (preferencias.getGlobalData(this, "Sellado") == "Marchamo"){
                 binding.rbSelladoMarchamo.isChecked = true
@@ -838,6 +880,7 @@ class MisionActivity : AppCompatActivity() {
         preferencias.setGlobalData(this, "M_Gps", binding.etMarchamoGps.text.toString())
         preferencias.setGlobalData(this, "NombreTransporte", binding.etNombreTransportista.text.toString())
         preferencias.setGlobalData(this, "Notas", binding.etNotas.text.toString())
+        preferencias.setGlobalData(this, "DescripcionCabezal", binding.etDescripcionCabezal.text.toString())
 
         preferencias.setGlobalData(this, "HoraContacto", binding.etHoraContacto.text.toString())
     }
@@ -990,6 +1033,17 @@ class MisionActivity : AppCompatActivity() {
             /*preferencias.updateGlobalData(this, "Notas", binding.etNotas.text.toString())*/
             preferencias.setGlobalData(this, "Notas", binding.etNotas.text.toString())
             println("UPDATE Notas= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+        }
+        //DescripcionCabezal
+        if (binding.etDescripcionCabezal.text.toString() != preferencias.getGlobalData(this, "DescripcionCabezal")){
+            //Update request
+            val update = Update("DESCRIPCIONCABEZAL", preferencias.getGlobalData(this, "DescripcionCabezal"), binding.etDescripcionCabezal.text.toString(), utils.latitude,
+                utils.longitude, preferencias.getGlobalData(this, "TM"))
+
+            utils.doRequest(update, this)
+            //Actualiza las preferencias
+            preferencias.setGlobalData(this, "DescripcionCabezal", binding.etDescripcionCabezal.text.toString())
+            println("UPDATE DescripcionCabezal= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
         }
         utils.stopLocationUpdates()
     }
@@ -1151,6 +1205,19 @@ class MisionActivity : AppCompatActivity() {
                 preferencias.updateGlobalData(this, "Notas", binding.etMarchamoGps.text.toString())
             }
         }
+
+        //DESC. CABEZAL
+        if (binding.etDescripcionCabezal.text.toString() != preferencias.getGlobalData(this, "au_DescripcionCabezal")){
+            //Update request
+            val update = Update("DESCRIPCIONCABEZAL", preferencias.getGlobalData(this, "au_DescripcionCabezal"), binding.etDescripcionCabezal.text.toString(), utils.latitude,
+                utils.longitude, preferencias.getGlobalData(this, "TM"))
+
+            utils.doRequest(update, this)
+            println("1UPDATE DescripcionCabezal= Success: "+utils.infoUpdate!!.Success.toString()+" Mensaje: "+utils.infoUpdate!!.Message)
+            if(utils.infoUpdate!!.Success){
+                preferencias.updateGlobalData(this, "DescripcionCabezal", binding.etMarchamoGps.text.toString())
+            }
+        }
     }
 
     private suspend fun primeraSesion(){
@@ -1170,11 +1237,11 @@ class MisionActivity : AppCompatActivity() {
 
         println("HORA CONTACTO BEFORE /NUEVAMISION =${horaContacto}=")
         val mision = Mision(binding.etNumArma.text.toString(), horaContacto.toString(), "", binding.etMarchamoFiscal.text.toString(), binding.etMarchamoGps.text.toString(),
-            binding.etNotas.text.toString(), preferencias.getGlobalData(this@MisionActivity, "Rui"), binding.etNombrePiloto.text.toString(),
+            binding.etNotas.text.toString(), preferencias.getGlobalData(this@MisionActivity, "Rui").toInt(), binding.etNombrePiloto.text.toString(),
 
             binding.etPlacaCabezal.text.toString(), sellado, getCodPiloto(),
             preferencias.getGlobalData(this@MisionActivity, "TM"),
-            binding.etNombreTransportista.text.toString(), getCodTransporte(), "0", /*selectedSpinnerInt.toString(), */ /* binding.etHoraContacto.text.toString()*/)
+            binding.etNombreTransportista.text.toString(), getCodTransporte(), false,binding.etDescripcionCabezal.text.toString()  /*selectedSpinnerInt.toString(), */ /* binding.etHoraContacto.text.toString()*/)
         //if (checkboxPredio.isChecked) "1" else "0"
 
         //Establece los campos modificables como preferencias

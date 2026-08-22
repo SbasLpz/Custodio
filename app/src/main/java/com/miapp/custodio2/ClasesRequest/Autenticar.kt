@@ -6,4 +6,4 @@ data class Autenticar(val AsignadoVisto:String, val CambioPassword: String, val 
                       val MarchamoGPS:String, val Mensaje: String, val Nombramiento: String, val NombreCustodio:String, val NombreTransporte:String, val NombreUsuario: String, val Notas: String,
                       val NumeroContenedor:String, val NumeroViaje: String, val Pais:String, val PasswordUsuario: String, val Piloto:String, val Placa: String, val PlacaTC: String, val PrimerUso: String,
                       var Rui:Int, val Sellado: String, val Success: String, val TelefonoEmergencia:String, val TelefonoPiloto: String, val TelefonoTransporte: String, val Directriz:String, val Token: String, val TotalServiciosApp: String,
-                      val TotalServiciosMes: String, val UltimoUso: String)
+                      val TotalServiciosMes: String, val UltimoUso: String, val DescripcionCabezal: String)

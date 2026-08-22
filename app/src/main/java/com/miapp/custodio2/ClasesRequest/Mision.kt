@@ -2,6 +2,6 @@ package com.miapp.custodio2.ClasesRequest
 
 //PARA ENVIAR
 data class Mision(val Escopeta:String, val HoraContacto:String, val Marchamo: String, val MarchamoFiscal: String, val MarchamoGPS:String,
-                  val Notas:String, val NumeroViaje: String, val Piloto: String, val Placa:String,
+                  val Notas:String, val NumeroViaje: Int, val Piloto: String, val Placa:String,
                   val Sellado: String, val Telefono: String, val Token: String,
-                  val NombreTransporte:String, val TelefonoTransporte: String, val UsaPredio:String)
+                  val NombreTransporte:String, val TelefonoTransporte: String, val UsaPredio: Boolean, val DescripcionCabezal: String)

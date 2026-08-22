@@ -32,7 +32,10 @@ import com.google.gson.GsonBuilder
 import com.miapp.custodio2.ClasesRequest.Adapters.Adapter
 import com.miapp.custodio2.ClasesRequest.Adapters.CardViewData
 import com.miapp.custodio2.ClasesRequest.*
+import com.miapp.custodio2.ClasesRequest.Models.Photo
+import com.miapp.custodio2.ClasesRequest.Models.TypePhoto
 import com.miapp.custodio2.Utils.Checker
+import com.miapp.custodio2.Utils.FotosManager
 import com.miapp.custodio2.Utils.LocationService
 import com.miapp.custodio2.Utils.Preferencias
 import com.miapp.custodio2.Utils.RequestPermissions
@@ -201,8 +204,16 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                 //Si hay foto del marchamo fiscal subirlo sino seguir
                 if(utils.foto != ""){
 
-                    //Nuevo objeto tipo Foto
-                    val foto = Foto(requestCode,"fotografia", utils.getCurrentDate(), utils.foto, utils.latitude, utils.longitude, preferencias.getGlobalData(this@BotonesActivity, "TM"))
+                    var foto:Foto;
+                    if (requestCode == 99){ //Foto Nombramiento
+                        foto = Foto(preferencias.getGlobalData(this@BotonesActivity, "TM"), "FotoNombramiento", utils.latitude, utils.longitude, utils.foto, 7)
+                    } else if (requestCode == 98) { //Foto Marchamo
+                        foto = Foto(preferencias.getGlobalData(this@BotonesActivity, "TM"), "FotoMarchamo", utils.latitude, utils.longitude, utils.foto, 2)
+                    } else {
+                        //Nuevo objeto tipo Foto
+                        foto = Foto(preferencias.getGlobalData(this@BotonesActivity, "TM"),"FOTOGRAFIA", utils.latitude, utils.longitude, utils.foto, 4)
+                    }
+
                     utils.doRequest(foto, this@BotonesActivity)
 
 
@@ -218,6 +229,7 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                         }
                     }
                     utils.foto = ""
+
                 }
             }
 
@@ -313,13 +325,17 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
             Toast.makeText(this, "No se pudo Enviar el comando, recargue la pantalla de botones.", Toast.LENGTH_LONG).show()
             return
         }
+
         println("/// --- /// --- / ID: ${utils.infoBotones!!.Data[position].Id}")
+
         utils.progressDialog = ProgressDialog(this)
         utils.progressDialog!!.theme = ProgressDialog.THEME_LIGHT
         utils.progressDialog!!.mode = ProgressDialog.MODE_INDETERMINATE
         utils.progressDialog!!.setMessage("Enviando información...")
         utils.progressDialog!!.setTitle("Enviando datos")
         utils.progressDialog!!.show()
+
+
         lifecycleScope.launch {
             utils.latitude = ""
             utils.longitude = ""
@@ -329,6 +345,10 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                     var tipoEvento = "1"
                     if(name == "Pánico" || name == "Desperfectos" || name == "Puesto de Registro" || name == "Unidad Accidentada"){
                         tipoEvento = "2"
+                    }
+
+                    if (name == "Fotografia Nombramiento" || name == "Fotografia Marchamo Fiscal") {
+                        utils.progressDialog!!.dismiss()
                     }
 
                     //Ya se tiene la UBICACION
@@ -412,6 +432,14 @@ class BotonesActivity : AppCompatActivity(), Adapter.OnItemClickListener, Checke
                     /** Abrir nueva actividad **/
                     //startActivity(Intent(this@BotonesActivity, FinalizarActivity::class.java))
                     mostrarDialogoConValidacion(this@BotonesActivity, registro, name)
+                }
+                "Fotografia Nombramiento" -> {
+                    utils.pickImageOnlyCamera(this@BotonesActivity, 99)
+                    utils.progressDialog!!.dismiss()
+                }
+                "Fotografia Marchamo Fiscal" -> {
+                    utils.pickImageOnlyCamera(this@BotonesActivity, 98)
+                    utils.progressDialog!!.dismiss()
                 }
                 else ->{
                     utils.doRequest(registro, this@BotonesActivity)

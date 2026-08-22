@@ -87,6 +87,7 @@ class RequestPermissions() {
     var infoFoto:FotoRes? = null
     var infoBotones: BotonesRes? = null
     var infoDireccion: EnvioRes? = null
+    var infoConvoy: ConvoyRes? = null
     var infoRegistro: RegistroRes? = null
     var infoCheck: CheckRes? = null
     var infoFinalizar:FinalizarRes? = null
@@ -495,6 +496,41 @@ class RequestPermissions() {
             .show()
     }
 
+    fun pickImageOnlyCamera(act:Activity, reqCode: Int){
+        progressDialog = ProgressDialog(act)
+        progressDialog!!.theme = ProgressDialog.THEME_LIGHT
+        progressDialog!!.mode = ProgressDialog.MODE_INDETERMINATE
+        progressDialog!!.setMessage("Subiendo foto...")
+        progressDialog!!.setTitle("Enviando foto")
+
+        if (progressDialog == null) {
+            println("Oh no, no se desplego el progrems dialog en PickImage")
+            println("Oh no, no se desplego el progrems dialog en PickImage")
+            return
+        }
+
+        val items = arrayOf("Cámara")
+        MaterialAlertDialogBuilder(act)
+            .setTitle("Subir foto con: ")
+            .setItems(items) { dialog, which ->
+                when(which){
+                    0 -> {
+                        progressDialog!!.show()
+                        //camara
+                        ImagePicker.with(act)
+                            .compress(1000)
+                            .maxResultSize(1032, 1032)
+                            .cameraOnly()	//User can only capture image using Camera
+                            .start(reqCode)
+                    }
+                }
+            }
+            .setNeutralButton("Cancelar") { dialog, which ->
+                // Respond to neutral button press
+            }
+            .show()
+    }
+
 
     fun converToBase64(act: Activity, uri: Uri): String{
         val bitmap: Bitmap = BitmapFactory.decodeStream(act.contentResolver.openInputStream(uri))
@@ -544,6 +580,7 @@ class RequestPermissions() {
             is MutableList<*> -> subirListFotos(datos as MutableList<Foto>, act)
             is Botones -> getBotones(datos, act)
             is Envio -> getDireccion(datos, act)
+            is Convoy -> getConvoyData(datos, act)
             is Registro -> registro(datos, act)
             is Check -> checkMision(datos, act)
             is Extraccion -> extraccion(datos, act)
@@ -627,6 +664,8 @@ class RequestPermissions() {
             jsonObject.put("NombreTransporte", datos.NombreTransporte)
             jsonObject.put("TelefonoTransporte", datos.TelefonoTransporte)
             jsonObject.put("UsaPredio", datos.UsaPredio)
+            jsonObject.put("DescripcionCabezal", datos.DescripcionCabezal)
+
             val jsonObjectString = jsonObject.toString()
             val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
 
@@ -729,13 +768,13 @@ class RequestPermissions() {
             val jsonObject = JSONObject()
 
             //jsonObject.put("ID", datos.Id)
+            jsonObject.put("Token", datos.Token)
             jsonObject.put("Accion", datos.Accion)
-            jsonObject.put("Fecha", datos.Fecha)
-            jsonObject.put("Foto", datos.Foto)
             jsonObject.put("Latitud", datos.Latitud)
             jsonObject.put("Longitud", datos.Longitud)
-            jsonObject.put("TipoFotografia", datos.Id)
-            jsonObject.put("Token", datos.Token)
+            jsonObject.put("Foto", datos.Foto)
+            jsonObject.put("TipoFotografia", datos.TipoFotografia)
+
             val jsonObjectString = jsonObject.toString()
             val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
 
@@ -784,13 +823,12 @@ class RequestPermissions() {
                 /** Inicio iteracion Fotos **/
                 val jsonObject = JSONObject()
                 //jsonObject.put("ID", foto.Id)
+                jsonObject.put("Token", foto.Token)
                 jsonObject.put("Accion", foto.Accion)
-                jsonObject.put("Fecha", foto.Fecha)
-                jsonObject.put("Foto", foto.Foto)
                 jsonObject.put("Latitud", foto.Latitud)
                 jsonObject.put("Longitud", foto.Longitud)
-                jsonObject.put("TipoFotografia", foto.Id)
-                jsonObject.put("Token", foto.Token)
+                jsonObject.put("Foto", foto.Foto)
+                jsonObject.put("TipoFotografia", foto.TipoFotografia)
 
                 val jsonObjectString = jsonObject.toString()
                 val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
@@ -809,16 +847,16 @@ class RequestPermissions() {
                     println("Consulta Foto: "+jsonObjectString)
                     println("EXITO-FOTO, json="+prettyJson)
                     infoFoto = readResult
-                    Toast.makeText(act, "Foto de Tipo: "+foto.Id+" Success: "+ infoFoto!!.Message, Toast.LENGTH_SHORT).show()
-                    println("Foto de Tipo: "+foto.Id+" Success: "+ infoFoto!!.Success.toString()+" Message: "+infoFoto!!.Message)
+                    Toast.makeText(act, "Foto de Tipo: "+foto.TipoFotografia+" Success: "+ infoFoto!!.Message, Toast.LENGTH_SHORT).show()
+                    println("Foto de Tipo: "+foto.TipoFotografia+" Success: "+ infoFoto!!.Success.toString()+" Message: "+infoFoto!!.Message)
                 } else {
                     Toast.makeText(act, "Erro al subir la foto", Toast.LENGTH_SHORT).show()
                     println("ERROR-SUBIR FOTO: "+response.code().toString())
                     println("Consulta Hecha: "+jsonObjectString)
-                    Toast.makeText(act, "Foto de Tipo: "+foto.Id+" ERROR: "+response.errorBody().toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(act, "Foto de Tipo: "+foto.TipoFotografia+" ERROR: "+response.errorBody().toString(), Toast.LENGTH_SHORT).show()
                     infoFoto = null
                     errorString = "ERROR FOTO: "+response.code().toString()+" CONSULTA: "+jsonObjectString
-                    println("ERROR Foto Tipo: "+foto.Id+" ErrorString: "+errorString)
+                    println("ERROR Foto Tipo: "+foto.TipoFotografia+" ErrorString: "+errorString)
                 }
                 /** Fin iteracion Fotos **/
             }
@@ -1339,6 +1377,48 @@ class RequestPermissions() {
                 if (continuation.isActive) continuation.resume(false) {}
             }
             .show()
+    }
+
+    suspend fun getConvoyData(datos: Convoy, act: Activity){
+        try {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(act.getString(com.miapp.custodio2.R.string.UrlBase))
+                .build()
+            val service = retrofit.create(APIService::class.java)
+            val jsonObject = JSONObject()
+
+            jsonObject.put("Token", datos.Token)
+            jsonObject.put("Codigo", datos.Codigo)
+
+            val jsonObjectString = jsonObject.toString()
+            val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+
+            val response = service.endObtenerContactos(requestBody)
+            if (response.isSuccessful) {
+                //Obtiene la respuesta del request y la pasa a JSON
+                val gson = GsonBuilder().setPrettyPrinting().create()
+                val prettyJson = gson.toJson(JsonParser.parseString(response.body()?.string()))
+                //El JSON lo pasas a objeto tipo Autenticar (readREsult)
+                val gson2 = GsonBuilder().setPrettyPrinting().create()
+                val readResult: ConvoyRes = gson2.fromJson(prettyJson, ConvoyRes::class.java)
+
+                println("Consulta CONVOY: "+jsonObjectString)
+                println("EXITO-GET CONVOY, json="+prettyJson)
+                infoConvoy = readResult
+            } else {
+                println("ERROR-GET CONVOY: "+response.code().toString())
+                println("Consulta Hecha: "+jsonObjectString)
+                errorString = "ERROR-GET CONVOY: "+response.code().toString()+" CONSULTA: "+jsonObjectString
+            }
+        } catch (e: UnknownHostException){
+            println("getCONVOY/ Error de resolución de host: ${e.message}")
+            Toast.makeText(act, "getDirec/ Error comunicación con host, verfique que tenga conexión a Internet", Toast.LENGTH_LONG).show()
+        } catch (e: SocketTimeoutException) {
+            println("getCONVOY/ Error de tiempo de espera de conexión: ${e.message}")
+            Toast.makeText(act, "getDirec/ Error de tiempo de espera de conexión, intente de nuevo", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(act, "getCONVOY: Error de comunicación con el servidor. Verifique su conexión a Internet.", Toast.LENGTH_LONG).show()
+        }
     }
 
 

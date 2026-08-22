@@ -59,4 +59,7 @@ interface APIService {
     suspend fun endCheckFinalizar(@Body requestBody: RequestBody): retrofit2.Response<ResponseBody>
     @POST("SolicitarReconcentrar")
     suspend fun endExtraccion(@Body requestBody: RequestBody): retrofit2.Response<ResponseBody>
+
+    @POST("ObtenerContactosServicio")
+    suspend fun endObtenerContactos(@Body requestBody: RequestBody): retrofit2.Response<ResponseBody>
 }

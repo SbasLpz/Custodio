@@ -339,7 +339,39 @@
             app:layout_constraintStart_toStartOf="@id/etNombrePiloto"
             app:layout_constraintEnd_toEndOf="@id/etNombrePiloto"/>
 
-<!--        <ImageView-->
+
+        <TextView
+            android:id="@+id/tvConvoy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Convoy:"
+            android:textColor="@color/et_background_color"
+            android:textSize="19sp"
+            android:fontFamily="@font/robotoregular"
+            android:layout_marginStart="@dimen/margin_subTxt_mision_start"
+            android:layout_marginTop="@dimen/margin_subTxt_mision_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvRecordatorio"
+            />
+
+        <EditText
+            android:id="@+id/etConvoy"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:inputType="textMultiLine"
+            android:gravity="top"
+            android:background="#E8E8E8"
+            android:textColor="@color/black"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:padding="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvConvoy"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+
+        <!--        <ImageView-->
 <!--            android:id="@+id/ivMarchamoFiscalFoto"-->
 <!--            android:layout_width="wrap_content"-->
 <!--            android:layout_height="wrap_content"-->
@@ -361,7 +393,7 @@
             android:layout_marginStart="@dimen/margin_subTxt_mision_start"
             android:layout_marginTop="@dimen/margin_subTxt_mision_top"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvRecordatorio"
+            app:layout_constraintTop_toBottomOf="@id/etConvoy"
             />
 
         <View
@@ -394,6 +426,42 @@
             app:layout_constraintStart_toStartOf="@id/tvPais"
             app:layout_constraintTop_toBottomOf="@id/tvPais"/>
 
+
+
+        <TextView
+            android:id="@+id/tvDescripcionCabezal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descripción del Cabezal:"
+            android:textColor="@color/et_background_color"
+            android:textSize="19sp"
+            android:fontFamily="@font/robotoregular"
+            android:layout_marginStart="@dimen/margin_subTxt_mision_start"
+            android:layout_marginTop="@dimen/margin_subTxt_mision_top"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner"
+            />
+
+        <EditText
+            android:id="@+id/etDescripcionCabezal"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:inputType="textMultiLine"
+            android:gravity="top"
+            android:background="#E8E8E8"
+            android:textColor="@color/black"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:padding="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDescripcionCabezal"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+
+
+
+
         <TextView
             android:id="@+id/tvNombreTransportista"
             android:layout_width="wrap_content"
@@ -403,7 +471,7 @@
             android:layout_marginTop="@dimen/margin_10dp"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@id/tvDatosPorAgregar"
-            app:layout_constraintTop_toBottomOf="@id/spinner"
+            app:layout_constraintTop_toBottomOf="@id/etDescripcionCabezal"
             />
 
         <EditText

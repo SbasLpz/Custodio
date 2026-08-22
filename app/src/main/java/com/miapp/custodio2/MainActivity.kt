@@ -219,6 +219,7 @@ class MainActivity : AppCompatActivity() {
         //PREFERENCIAS
         //Token Mision
         preferencias.setGlobalData(this@MainActivity, "TM", utils.infoAutenticar!!.Token)
+        preferencias.setGlobalData(this@MainActivity, "CODIGO", utils.infoAutenticar!!.Codigo.toString())
         //Rui
         preferencias.setGlobalData(this@MainActivity, "Rui", utils.infoAutenticar!!.Rui.toString())
         //nomrbre custodio
@@ -269,6 +270,7 @@ class MainActivity : AppCompatActivity() {
         preferencias.setGlobalData(this, "au_Gps", utils.infoAutenticar!!.MarchamoGPS)
         preferencias.setGlobalData(this, "au_NombreTransporte", utils.infoAutenticar!!.NombreTransporte)
         preferencias.setGlobalData(this, "au_Notas", utils.infoAutenticar!!.Notas)
+        preferencias.setGlobalData(this, "au_DescripcionCabezal", utils.infoAutenticar!!.DescripcionCabezal)
         //otras
         preferencias.setGlobalData(this, "verM", "false")
     }
@@ -321,7 +323,7 @@ class MainActivity : AppCompatActivity() {
             println("KOLA: "+utils.latitude)
 //            }
 
-            val autenticar = Inicio(utils.tokenDevice, "false", utils.latitude, utils.longitude, binding.etPalabra.text.toString(),
+            val autenticar = Inicio(utils.tokenDevice, false, utils.latitude, utils.longitude, binding.etPalabra.text.toString(),
                 binding.etPassword.text.toString(), binding.etUsuario.text.toString())
 
             utils.doRequest(autenticar, this@MainActivity)

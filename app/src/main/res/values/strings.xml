@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Comsi Custodio 3.8.6</string>
     <string name="cita">Sistema de gestión integral propiedad de \n CORPORACIÓN COMSI</string>
-    <string name="UrlBase">https://siccap.corporacioncomsi.com:27782/ComsiApp.svc/</string>
-<!--    <string name="UrlBase">https://siccap.corporacioncomsi.com:20003/Custodio/ApiV2/</string>-->
+<!--    <string name="UrlBase">https://siccap.corporacioncomsi.com:27782/ComsiApp.svc/</string>-->
+    <string name="UrlBase">https://siccap.corporacioncomsi.com:20003/Custodio/ApiV2/</string>
     <string name="recordatorio">Si los datos anteriores NO COINCIDEN con su misión, debe <u><b>Informar de inmediato a la central y esperar instrucciones antes de iniciar ruta.</b></u></string>
     <string name="prueba">PRUEBA</string>
     <string name="version">V-3.8.6</string>
